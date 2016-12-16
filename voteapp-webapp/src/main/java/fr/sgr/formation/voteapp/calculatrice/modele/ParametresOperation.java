@@ -11,4 +11,6 @@ public class ParametresOperation {
 	private Double operande1;
 	private Double operande2;
 	private String Theo;
+
+	public String Laure;
 }
