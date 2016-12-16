@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class ParametresOperation {
 	private Double operande1;
 	private Double operande2;
+
+	public String Laure;
 }
