@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
+import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationException;
+import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationService;
 import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateurInvalideException;
 import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateursServices;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +23,24 @@ import lombok.extern.slf4j.Slf4j;
 public class UtilisateursRest {
 	@Autowired
 	private UtilisateursServices utilisateursServices;
+	@Autowired
+	private AuthentificationService authentificationService;
 
+	/**
+	 * methode pour creer un utilisateur dans le systeme / le login figurant
+	 * dans l'URL est celui de l'admin qui cree l'utilisateur / le corps de la
+	 * requete est l'utiliateur a creer
+	 * 
+	 * @param login
+	 * @param utilisateur
+	 * @throws UtilisateurInvalideException
+	 * @throws AuthentificationException
+	 */
 	@RequestMapping(method = RequestMethod.PUT)
 	public void creer(@PathVariable String login, @RequestBody Utilisateur utilisateur)
-			throws UtilisateurInvalideException {
-		log.info("=====> Création ou modification de l'utilisateur de login {}: {}.", login, utilisateur);
-		utilisateur.setLogin(login);
+			throws UtilisateurInvalideException, AuthentificationException {
+		log.info("=====> Création ou modification de l'utilisateur {}.", utilisateur);
+		authentificationService.verificationAdministrateur(login);
 		utilisateursServices.creer(utilisateur);
 	}
 
