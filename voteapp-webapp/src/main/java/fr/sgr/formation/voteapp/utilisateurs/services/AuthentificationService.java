@@ -40,4 +40,24 @@ public class AuthentificationService {
 		}
 	}
 
+	/**
+	 * lève une exception si l'utilisateur identifié par son login n'est pas
+	 * gérant
+	 * 
+	 * @param login
+	 *            Login identifiant l'utilisateur.
+	 * @throws AuthentificationException
+	 */
+	public void verificationGerant(String login) throws AuthentificationException {
+		log.info("=====> Vérification du statut de gérant de l'utilisateur de login {}.", login);
+
+		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+
+		/** Validation du statut d'administrateur correspondant au login */
+		if (!utilisateurProfil.isGerant(utilisateur)) {
+			// TODO : cette exception ne fonctionne pas
+			throw new AuthentificationException(ErreurAuthentification.GERANT_OBLIGATOIRE);
+		}
+	}
+
 }
