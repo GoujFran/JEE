@@ -52,6 +52,7 @@ public class ElectionService {
 
 	public void fermerElection() {
 		// TODO
+
 	}
 
 	public void modifierElection() {
