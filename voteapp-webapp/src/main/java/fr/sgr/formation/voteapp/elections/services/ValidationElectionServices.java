@@ -1,11 +1,13 @@
 package fr.sgr.formation.voteapp.elections.services;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
 import fr.sgr.formation.voteapp.elections.modele.Election;
 import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException.ErreurElection;
 import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateurInvalideException;
 
+@Service
 public class ValidationElectionServices {
 	/**
 	 * Vérifie qu'une élection est valide.

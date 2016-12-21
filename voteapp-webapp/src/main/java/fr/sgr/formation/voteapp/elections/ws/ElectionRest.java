@@ -15,7 +15,7 @@ import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("election/{id}")
+@RequestMapping("elections/{id}")
 @Slf4j
 public class ElectionRest {
 
