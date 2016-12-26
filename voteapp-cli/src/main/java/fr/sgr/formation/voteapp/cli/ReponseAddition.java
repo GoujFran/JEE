@@ -7,4 +7,5 @@ public class ReponseAddition {
 	private double operande1;
 	private double operande2;
 	private double resultat;
+	// blabla
 }
