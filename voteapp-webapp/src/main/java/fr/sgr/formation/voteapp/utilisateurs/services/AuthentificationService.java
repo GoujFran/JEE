@@ -30,13 +30,28 @@ public class AuthentificationService {
 	 */
 	public void verificationAdministrateur(String login) throws AuthentificationException {
 		log.info("=====> Vérification du statut d'aministrateur de l'utilisateur de login {}.", login);
-
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 
 		/** Validation du statut d'administrateur correspondant au login */
 		if (!utilisateurProfil.isAdministrateur(utilisateur)) {
-			// TODO : cette exception ne fonctionne pas
 			throw new AuthentificationException(ErreurAuthentification.ADMINISTRATEUR_OBLIGATOIRE);
+		}
+	}
+
+	/**
+	 * lève une exception si le mot de passe ne correspond pas à celui de
+	 * l'utilisateur
+	 * 
+	 * @param motDePasse
+	 *            mot de passe à tester.
+	 * @throws AuthentificationException
+	 */
+	public void verificationMotdePasse(Utilisateur utilisateur, String motDePasse) throws AuthentificationException {
+		log.info("=====> Vérification du mot de passe {}.", motDePasse);
+
+		/** Validation du statut d'administrateur correspondant au login */
+		if (!utilisateur.getMotDePasse().equals(motDePasse)) {
+			throw new AuthentificationException(ErreurAuthentification.MAUVAIS_MDP);
 		}
 	}
 

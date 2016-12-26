@@ -33,6 +33,7 @@ public class Initialisation {
 	@Autowired
 	private UtilisateursServices utilisateursServices;
 
+	@SuppressWarnings("deprecation")
 	@PostConstruct
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void init() {

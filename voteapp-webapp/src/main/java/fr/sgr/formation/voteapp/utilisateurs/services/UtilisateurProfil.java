@@ -17,7 +17,6 @@ public class UtilisateurProfil {
 
 		/** Validation de l'existence de l'utilisateur. */
 		if (utilisateur == null) {
-			// TODO : cette exception ne fonctionne pas
 			throw new AuthentificationException(ErreurAuthentification.UTILISATEUR_INEXISTANT);
 		}
 
@@ -27,18 +26,26 @@ public class UtilisateurProfil {
 		return false;
 	}
 
-	public boolean isGerant(Utilisateur utilisateur) {
-		// TODO : comme dans la fonction isAdministrateur, vérifier que
-		// l'utilisateur n'est pas nul
+	public boolean isGerant(Utilisateur utilisateur) throws AuthentificationException {
+
+		/** Validation de l'existence de l'utilisateur. */
+		if (utilisateur == null) {
+			throw new AuthentificationException(ErreurAuthentification.UTILISATEUR_INEXISTANT);
+		}
+
 		if (utilisateur.getProfils().contains(ProfilsUtilisateur.GERANT)) {
 			return true;
 		}
 		return false;
 	}
 
-	public boolean isUtilisateur(Utilisateur utilisateur) {
-		// TODO : comme dans la fonction isAdministrateur, vérifier que
-		// l'utilisateur n'est pas nul
+	public boolean isUtilisateur(Utilisateur utilisateur) throws AuthentificationException {
+
+		/** Validation de l'existence de l'utilisateur. */
+		if (utilisateur == null) {
+			throw new AuthentificationException(ErreurAuthentification.UTILISATEUR_INEXISTANT);
+		}
+
 		if (utilisateur.getProfils().contains(ProfilsUtilisateur.UTILISATEUR)) {
 			return true;
 		}

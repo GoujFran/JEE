@@ -1,5 +1,9 @@
 package fr.sgr.formation.voteapp.utilisateurs.services;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import javax.persistence.EntityManager;
 
 import org.apache.commons.lang3.StringUtils;
@@ -9,6 +13,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.sgr.formation.voteapp.notifications.services.NotificationsServices;
+import fr.sgr.formation.voteapp.utilisateurs.modele.Adresse;
+import fr.sgr.formation.voteapp.utilisateurs.modele.ProfilsUtilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateurInvalideException.ErreurUtilisateur;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +95,112 @@ public class UtilisateursServices {
 		}
 
 		return null;
+	}
+
+	/**
+	 * modifie le nom d'un utilisateur
+	 * 
+	 * @param nom
+	 *            Nom de l'utilisateur.
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur modifierNom(Utilisateur utilisateur, String nom) {
+		log.info("=====> Modification du nom de l'utilisateur {} par {}.", utilisateur, nom);
+		utilisateur.setNom(nom);
+		return utilisateur;
+	}
+
+	/**
+	 * modifie le prénom d'un utilisateur
+	 * 
+	 * @param prenom
+	 *            Prénom de l'utilisateur.
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur modifierPrenom(Utilisateur utilisateur, String prenom) {
+		log.info("=====> Modification du prénom de l'utilisateur {} par {}.", utilisateur, prenom);
+		utilisateur.setPrenom(prenom);
+		return utilisateur;
+	}
+
+	/**
+	 * modifie l'adresse email d'un utilisateur
+	 * 
+	 * @param email
+	 *            Adresse email de l'utilisateur.
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur modifierEmail(Utilisateur utilisateur, String email) {
+		log.info("=====> Modification de l'adresse email de l'utilisateur {} par {}.", utilisateur, email);
+		utilisateur.setEmail(email);
+		return utilisateur;
+	}
+
+	/**
+	 * modifie le mot de passe d'un utilisateur
+	 * 
+	 * @param motDePasse
+	 *            Mot de passe de l'utilisateur.
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur modifierMDP(Utilisateur utilisateur, String motDePasse) {
+		log.info("=====> Modification du mot de passe de l'utilisateur {} par {}.", utilisateur, motDePasse);
+		utilisateur.setMotDePasse(motDePasse);
+		return utilisateur;
+	}
+
+	/**
+	 * modifie la date de naissance d'un utilisateur
+	 * 
+	 * @param dateDeNaissance
+	 *            Date de naissance de l'utilisateur.
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur modifierDateNaissance(Utilisateur utilisateur, String dateDeNaissance) {
+		log.info("=====> Modification de la date de naissance de l'utilisateur {} par {}.", utilisateur,
+				dateDeNaissance);
+		Date date = new Date();
+		String[] myTable = dateDeNaissance.split("/");
+		date.setDate(Integer.parseInt(myTable[0]));
+		date.setMonth(Integer.parseInt(myTable[1]));
+		date.setYear(Integer.parseInt(myTable[2]));
+
+		utilisateur.setDateDeNaissance(date);
+		return utilisateur;
+	}
+
+	/**
+	 * modifie l'adresse d'un utilisateur
+	 * 
+	 * @param adresse
+	 *            Adresse de l'utilisateur.
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur modifierAdresse(Utilisateur utilisateur, Adresse adresse) {
+		log.info("=====> Modification de l'adresse de l'utilisateur {} par {}.", utilisateur, adresse);
+		utilisateur.setAdresse(adresse);
+		return utilisateur;
+	}
+
+	/**
+	 * L'utilisateur devient administrateur
+	 * 
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur toAdmin(Utilisateur utilisateur) {
+		log.info("=====> Promotion au rang d'administrateur de l'utilisateur {} .", utilisateur);
+		List<ProfilsUtilisateur> liste = new ArrayList<ProfilsUtilisateur>();
+		liste = utilisateur.getProfils();
+		liste.add(ProfilsUtilisateur.ADMINISTRATEUR);
+		utilisateur.setProfils(liste);
+		return utilisateur;
 	}
 
 }
