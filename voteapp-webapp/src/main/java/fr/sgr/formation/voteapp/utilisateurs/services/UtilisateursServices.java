@@ -98,6 +98,15 @@ public class UtilisateursServices {
 	}
 
 	/**
+	 * Retourne la liste des utilisateurs correspondant au critère de recherche
+	 */
+	public List<Utilisateur> getListe(String nom, String prenom, String ville, String profil) {
+		log.info("=====> Recherche des utilisateurs correspondant aux critères");
+		// TODO
+		return null;
+	}
+
+	/**
 	 * modifie le nom d'un utilisateur
 	 * 
 	 * @param nom

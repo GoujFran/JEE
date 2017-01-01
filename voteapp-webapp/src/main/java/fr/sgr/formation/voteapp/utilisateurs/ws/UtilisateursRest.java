@@ -1,5 +1,8 @@
 package fr.sgr.formation.voteapp.utilisateurs.ws;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -128,6 +131,29 @@ public class UtilisateursRest {
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 		return utilisateur;
+	}
+
+	// pour tester : http://localhost:8080/utilisateurs/123/liste
+	// ou http://localhost:8080/utilisateurs/123/liste/?prenom=laure
+	// http://localhost:8080/utilisateurs/123/liste/?nom=nicollet&prenom=laure
+	/**
+	 * methode pour récupérer la liste des utilisateurs du systeme
+	 * 
+	 * @throws AuthentificationException
+	 */
+	@RequestMapping(method = RequestMethod.GET, path = "liste")
+	public List<Utilisateur> lister(@PathVariable String login, @RequestParam(required = false) String nom,
+			@RequestParam(required = false) String prenom, @RequestParam(required = false) String ville,
+			@RequestParam(required = false) String profil) throws AuthentificationException {
+		log.info("=====> Récupération de la liste des utilisateurs.");
+		authentificationService.verificationAdministrateur(login);
+		List<Utilisateur> res;
+		res = utilisateursServices.getListe(nom, prenom, ville, profil);
+		// ----------------------------------------------------------------------------------------------------
+		res = new ArrayList<>();
+		res.add(new Utilisateur("id0516", nom, prenom, null, null, null, null, null, null));
+		// ----------------------------------------------------------------------------------------------------
+		return res;
 	}
 
 	@ExceptionHandler({ UtilisateurInvalideException.class })
