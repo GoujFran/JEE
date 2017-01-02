@@ -31,6 +31,8 @@ public class ValidationUtilisateurServices {
 		validerNom(utilisateur);
 		validerPrenom(utilisateur);
 		validerMotDePasse(utilisateur);
+		validerEmail(utilisateur);
+		validerProfils(utilisateur);
 
 		/** Validation des champs. */
 		return true;
@@ -57,6 +59,18 @@ public class ValidationUtilisateurServices {
 	private void validerMotDePasse(Utilisateur utilisateur) throws UtilisateurInvalideException {
 		if (StringUtils.isBlank(utilisateur.getMotDePasse())) {
 			throw new UtilisateurInvalideException(ErreurUtilisateur.MDP_OBLIGATOIRE);
+		}
+	}
+
+	private void validerEmail(Utilisateur utilisateur) throws UtilisateurInvalideException {
+		if (StringUtils.isBlank(utilisateur.getEmail())) {
+			throw new UtilisateurInvalideException(ErreurUtilisateur.EMAIL_OBLIGATOIRE);
+		}
+	}
+
+	private void validerProfils(Utilisateur utilisateur) throws UtilisateurInvalideException {
+		if (utilisateur.getProfils().isEmpty()) {
+			throw new UtilisateurInvalideException(ErreurUtilisateur.PROFIL_OBLIGATOIRE);
 		}
 	}
 }
