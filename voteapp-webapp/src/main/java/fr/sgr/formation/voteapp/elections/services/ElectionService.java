@@ -1,6 +1,7 @@
 package fr.sgr.formation.voteapp.elections.services;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 
@@ -10,8 +11,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import fr.sgr.formation.voteapp.elections.modele.Election;
+import fr.sgr.formation.voteapp.elections.modele.Vote;
 import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException.ErreurElection;
 import fr.sgr.formation.voteapp.notifications.services.NotificationsServices;
+import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -86,6 +89,11 @@ public class ElectionService {
 		return election;
 	}
 
+	/**
+	 * cloturer l'élection par le créateur
+	 * 
+	 * @param election
+	 */
 	@Transactional(propagation = Propagation.REQUIRED)
 	public void fermerElection(Election election) {
 		log.info("=====> Recherche de l'élection {}.", election);
@@ -93,9 +101,40 @@ public class ElectionService {
 		election.setDateCloture(date);
 	}
 
+	/**
+	 * modifier la description de l'élection par le créateur
+	 * 
+	 * @param election
+	 * @param titre
+	 */
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void modifierElection() {
-		// TODO
+	public void modifierTitre(Election election, String titre) {
+		log.info("=====> Modifier le titre de l'élection {} par {}.", election, titre);
+		election.setTitre(titre);
+	}
+
+	/**
+	 * modifier le titre de l'élection par le créateur
+	 * 
+	 * @param election
+	 * @param titre
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void modifierDescription(Election election, String description) {
+		log.info("=====> Modifier la description de l'élection {} par {}.", election, description);
+		election.setDescription(description);
+	}
+
+	/**
+	 * modifier les images de l'élection par le créateur
+	 * 
+	 * @param election
+	 * @param images
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void modifierImages(Election election, List<String> images) {
+		log.info("=====> Modifier les images de l'élection {} par {}.", election, images);
+		election.setImages(images);
 	}
 
 	public void listerElection() {
@@ -105,4 +144,39 @@ public class ElectionService {
 	public void consulterRésultats() {
 		// TODO
 	}
+
+	/**
+	 * verifier si l'utilisateur relié au login est propriétaire de l'élection
+	 * 
+	 * @param election
+	 * @param login
+	 * @throws ElectionInvalideException
+	 */
+	public void verifierProprietaire(Election election, String login) throws ElectionInvalideException {
+		log.info("=====> Vérification si {} propriétaire de {}.", login, election);
+		if (!login.equals(election.getProprietaire().getLogin())) {
+			throw new ElectionInvalideException(ErreurElection.NON_PROPRIETAIRE);
+		}
+	}
+
+	/**
+	 * permet à utilisateur de voter à une élection
+	 * 
+	 * @param election
+	 * @param utilisateur
+	 * @param vote
+	 * @throws ElectionInvalideException
+	 */
+	public void voter(Election election, Utilisateur utilisateur, Vote vote) throws ElectionInvalideException {
+		log.info("=====> Vote de {} à {}.", utilisateur, election);
+		if (election.getListeVotants().contains(utilisateur)) {
+			throw new ElectionInvalideException(ErreurElection.DEJA_VOTE);
+		}
+		if (!(election.getDateCloture() == null)) {
+			throw new ElectionInvalideException(ErreurElection.ELECTION_CLOTUREE);
+		}
+		election.getVotes().add(vote);
+		election.getListeVotants().add(utilisateur);
+	}
+
 }
