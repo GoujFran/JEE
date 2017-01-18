@@ -97,7 +97,8 @@ public class Initialisation {
 
 		Election election = new Election("01", francoise, "Election", "Une election se prépare");
 
-		System.out.println("Election " + election.toString());
+		// Vote vote = new Vote("01", francoise, Choix.OUI);
+		// election.getVotes().add(vote);
 
 		try {
 			electionService.creerElection(election);

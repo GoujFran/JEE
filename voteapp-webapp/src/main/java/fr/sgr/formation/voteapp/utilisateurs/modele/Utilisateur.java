@@ -47,4 +47,5 @@ public class Utilisateur {
 
 	@Embedded
 	private Adresse adresse;
+
 }
