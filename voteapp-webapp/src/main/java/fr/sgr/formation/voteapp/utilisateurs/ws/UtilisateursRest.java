@@ -156,6 +156,22 @@ public class UtilisateursRest {
 		return res;
 	}
 
+	// Pour tester : http://localhost:8080/utilisateurs/123/newMDP
+	/**
+	 * methode pour demander à changer de mot de passe
+	 * 
+	 * @throws AuthentificationException
+	 */
+	@RequestMapping(method = RequestMethod.GET, path = "newMDP")
+	public String demanderNouveauMDP(@PathVariable String login) throws AuthentificationException {
+		log.info("=====> Nouveau mot de passe.");
+		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+		utilisateursServices.nouveauMotDePasse(utilisateur);
+		String notifications = "Le changement de mot de passe a bien été effectué.";
+		return notifications;
+
+	}
+
 	@ExceptionHandler({ UtilisateurInvalideException.class })
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public DescriptionErreur gestionErreur(UtilisateurInvalideException exception) {

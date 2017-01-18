@@ -212,4 +212,21 @@ public class UtilisateursServices {
 		return utilisateur;
 	}
 
+	/**
+	 * Génération d'un nouveau mot de passe pour l'utilisateur
+	 * 
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur nouveauMotDePasse(Utilisateur utilisateur) {
+		log.info("=====> Génération d'un nouveau mot de passe pour l'utilisateur {} .", utilisateur);
+		double numero = Math.random() * 1000;
+		int entier = (int) Math.round(numero);
+		String nouveauMDP = String.valueOf(entier);
+		utilisateur.setMotDePasse(nouveauMDP);
+		String adresseMail = utilisateur.getEmail();
+		log.info("=====> Envoie du nouveau mot de passe {}, à l'adresse {}.", nouveauMDP, adresseMail);
+		return utilisateur;
+	}
+
 }
