@@ -21,6 +21,7 @@ public class ElectionInvalideException extends Exception {
 
 	public enum ErreurElection {
 		ELECTION_OBLIGATOIRE("L'élection est obligatoire pour effectuer l'opération."),
+		ID_OBLIGATOIRE("L'id est obligatoire pour effectuer l'opération."),
 		PROPRIETAIRE_OBLIGATOIRE("Le propriétaire est obligatoire pour effectuer l'opération."),
 		TITRE_OBLIGATOIRE("Le titre de l'éléction est obligatoire."),
 		DESCRIPTION_OBLIGATOIRE("La description de l'éléction est obligatoire."),;

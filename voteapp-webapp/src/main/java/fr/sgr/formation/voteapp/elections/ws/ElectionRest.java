@@ -25,20 +25,32 @@ public class ElectionRest {
 	private AuthentificationService authentificationService;
 
 	/**
-	 * methode pour creer une éléction dans le systeme / le login figurant dans
+	 * méthode pour creer une éléction dans le systeme / le id figurant dans
 	 * l'URL est celui du gérant qui cree l'élection / le corps de la requete
 	 * est l'élection a creer
 	 * 
-	 * @param login
+	 * @param id
 	 * @param election
 	 * @throws ElectionInvalideException
 	 * @throws AuthentificationException
 	 */
-	@RequestMapping(method = RequestMethod.PUT)
-	public void creer(@PathVariable String login, @RequestBody Election election)
+	@RequestMapping(method = RequestMethod.POST)
+	public void creer(@PathVariable String id, @RequestBody Election election)
 			throws AuthentificationException, ElectionInvalideException {
 		log.info("=====> Création ou modification de l'utilisateur {}.", election);
-		authentificationService.verificationGerant(login);
+		authentificationService.verificationGerant(id);
 		electionService.creerElection(election);
+	}
+
+	/**
+	 * méthode pour récupérer un utilisateur dans le systeme
+	 * 
+	 * @param id
+	 */
+	@RequestMapping(method = RequestMethod.GET)
+	public Election lire(@PathVariable String id) {
+		log.info("=====> Récupération de l'élection {}.", id);
+		Election election = electionService.recupererElection(id);
+		return election;
 	}
 }

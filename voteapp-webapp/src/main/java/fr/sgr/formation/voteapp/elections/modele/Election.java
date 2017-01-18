@@ -42,4 +42,19 @@ public class Election {
 	@CollectionTable(name = "votes", joinColumns = @JoinColumn(name = "id") )
 	private List<Vote> votes;
 
+	public Election(String id, Utilisateur propriétaire, String titre, String description) {
+		this.id = id;
+		this.proprietaire = propriétaire;
+		this.titre = titre;
+		this.description = description;
+		this.dateCloture = new Date();
+	}
+
+	public Election(String id, Utilisateur propriétaire, String titre, String description, List<String> images) {
+		this.id = id;
+		this.proprietaire = propriétaire;
+		this.titre = titre;
+		this.description = description;
+		this.images = images;
+	}
 }
