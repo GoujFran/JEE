@@ -47,8 +47,12 @@ public class Initialisation {
 		Ville rennes = new Ville();
 		rennes.setCodePostal("35000");
 		rennes.setNom("Rennes");
-
 		villeService.creer(rennes);
+
+		Ville bruz = new Ville();
+		bruz.setCodePostal("35170");
+		bruz.setNom("Bruz");
+		villeService.creer(bruz);
 
 		log.info("Initialisation d'un utilisateur et administrateur par défaut dans la base...");
 		List<ProfilsUtilisateur> liste = new ArrayList<ProfilsUtilisateur>();
@@ -77,7 +81,7 @@ public class Initialisation {
 		liste2.add(ProfilsUtilisateur.UTILISATEUR);
 		Adresse adresse2 = new Adresse();
 		adresse2.setRue("rue Louis Armand");
-		adresse2.setVille(rennes);
+		adresse2.setVille(bruz);
 		Date dateNaiss2 = new Date();
 		dateNaiss2.setYear(1994);
 		dateNaiss2.setMonth(8);

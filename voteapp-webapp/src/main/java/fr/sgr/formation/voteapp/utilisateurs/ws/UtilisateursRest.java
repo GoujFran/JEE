@@ -1,6 +1,5 @@
 package fr.sgr.formation.voteapp.utilisateurs.ws;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,10 +148,6 @@ public class UtilisateursRest {
 		authentificationService.verificationAdministrateur(login);
 		List<Utilisateur> res;
 		res = utilisateursServices.getListe(nom, prenom, ville, profil);
-		// ----------------------------------------------------------------------------------------------------
-		res = new ArrayList<>();
-		res.add(new Utilisateur("id0516", nom, prenom, null, null, null, null, null, null));
-		// ----------------------------------------------------------------------------------------------------
 		return res;
 	}
 
