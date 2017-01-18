@@ -1,5 +1,7 @@
 package fr.sgr.formation.voteapp.elections.services;
 
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,9 +87,10 @@ public class ElectionService {
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
-	public void fermerElection() {
-		// TODO
-
+	public void fermerElection(Election election) {
+		log.info("=====> Recherche de l'élection {}.", election);
+		Date date = new Date();
+		election.setDateCloture(date);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRED)
