@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.sgr.formation.voteapp.fonctionnementInterne.RetourPagine;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Adresse;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationException;
@@ -141,13 +142,15 @@ public class UtilisateursRest {
 	 * @throws AuthentificationException
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "liste")
-	public List<Utilisateur> lister(@PathVariable String login, @RequestParam(required = false) String nom,
+	public RetourPagine lister(@PathVariable String login, @RequestParam(required = false) String nom,
 			@RequestParam(required = false) String prenom, @RequestParam(required = false) String ville,
-			@RequestParam(required = false) String profil) throws AuthentificationException {
+			@RequestParam(required = false) String profil, @RequestParam(required = false) Integer nbItems,
+			@RequestParam(required = false) Integer numeroPage) throws AuthentificationException {
 		log.info("=====> Récupération de la liste des utilisateurs.");
 		authentificationService.verificationAdministrateur(login);
-		List<Utilisateur> res;
-		res = utilisateursServices.getListe(nom, prenom, ville, profil);
+		List<Utilisateur> listUsers;
+		listUsers = utilisateursServices.getListe(nom, prenom, ville, profil);
+		RetourPagine res = new RetourPagine(listUsers, nbItems, numeroPage);
 		return res;
 	}
 
