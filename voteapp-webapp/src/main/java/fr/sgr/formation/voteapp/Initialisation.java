@@ -106,6 +106,27 @@ public class Initialisation {
 			e.printStackTrace();
 		}
 
+		// initialisation de plusieurs utilisateurs pour des tests
+		List<ProfilsUtilisateur> profilUtilisateur = new ArrayList<ProfilsUtilisateur>();
+		profilUtilisateur.add(ProfilsUtilisateur.UTILISATEUR);
+		Adresse adr = new Adresse();
+		Date dNaiss = new Date();
+		for (int i = 1; i < 30; i++) {
+			adr.setRue("rue n°" + i);
+			adr.setVille(rennes);
+			dNaiss.setYear(1900 + i);
+			dNaiss.setMonth(i % 12);
+			dNaiss.setDate(i % 29);
+			try {
+				utilisateursServices
+						.creer(new Utilisateur(String.valueOf(i), "nom" + i, "prenom" + i, "mdp" + i, dNaiss,
+								"mail" + i + "@blabla.fr", "http://photo" + i + "delutilisateur.jpg", profilUtilisateur,
+								adr));
+			} catch (UtilisateurInvalideException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 }

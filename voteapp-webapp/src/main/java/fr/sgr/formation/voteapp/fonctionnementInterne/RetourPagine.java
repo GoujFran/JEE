@@ -32,7 +32,12 @@ public class RetourPagine {
 		nbTotalItems = liste.size();
 
 		if (this.nbItems != 0) {
-			nbPages = nbTotalItems / this.nbItems + nbTotalItems % this.nbItems;
+			if (nbTotalItems % this.nbItems == 0) {
+				nbPages = nbTotalItems / this.nbItems;
+			} else {
+				nbPages = nbTotalItems / this.nbItems + 1;
+			}
+
 		} else {
 			// si l'utilisateur n'a pas choisi nbItems et que la liste est vide
 			nbPages = 0;
