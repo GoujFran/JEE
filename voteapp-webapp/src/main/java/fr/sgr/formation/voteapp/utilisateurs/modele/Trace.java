@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -27,6 +28,8 @@ public class Trace {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
+	@ManyToOne
+	private Utilisateur utilisateur;
 	private String loginUtilisateur;
 	private String typeAction;
 	@Temporal(TemporalType.TIMESTAMP)

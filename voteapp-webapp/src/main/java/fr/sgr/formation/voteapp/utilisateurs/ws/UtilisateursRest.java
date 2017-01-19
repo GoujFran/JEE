@@ -1,8 +1,10 @@
 package fr.sgr.formation.voteapp.utilisateurs.ws;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.sgr.formation.voteapp.fonctionnementInterne.RetourPagine;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Adresse;
+import fr.sgr.formation.voteapp.utilisateurs.modele.Trace;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationException;
 import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationService;
@@ -157,6 +160,27 @@ public class UtilisateursRest {
 		List<Utilisateur> listUsers;
 		listUsers = utilisateursServices.getListe(nom, prenom, ville, profil);
 		RetourPagine res = new RetourPagine(listUsers, nbItems, numeroPage);
+		return res;
+	}
+
+	/**
+	 * methode pour récupérer la liste des traces du systeme
+	 * 
+	 * @throws AuthentificationException
+	 */
+	@RequestMapping(method = RequestMethod.GET, path = "traces")
+	public RetourPagine listerTraces(@PathVariable String login,
+			@RequestParam(required = false) String loginUtilisateur,
+			@RequestParam(required = false) String nomUtilisateur, @RequestParam(required = false) String typeAction,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/mm/yyyy") Date dateDebut,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/mm/yyyy") Date dateFin,
+			@RequestParam(required = false) Integer nbItems, @RequestParam(required = false) Integer numeroPage)
+					throws AuthentificationException {
+		log.info("=====> Récupération de la liste des traces.");
+		authentificationService.verificationAdministrateur(login);
+		List<Trace> listTraces;
+		listTraces = traceService.getListe(loginUtilisateur, nomUtilisateur, typeAction, dateDebut, dateFin);
+		RetourPagine res = new RetourPagine(listTraces, nbItems, numeroPage);
 		return res;
 	}
 

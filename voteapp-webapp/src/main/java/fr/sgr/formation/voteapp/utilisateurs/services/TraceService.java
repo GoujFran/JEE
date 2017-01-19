@@ -1,8 +1,10 @@
 package fr.sgr.formation.voteapp.utilisateurs.services;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class TraceService {
 	private NotificationsServices notificationsServices;
 
 	@Autowired
+	private UtilisateursServices utilisateurServices;
+
+	@Autowired
 	private EntityManager entityManager;
 
 	/**
@@ -37,6 +42,7 @@ public class TraceService {
 	 */
 	@Transactional(propagation = Propagation.REQUIRED)
 	public Trace creer(Trace trace, String login) {
+		trace.setUtilisateur(utilisateurServices.rechercherParLogin(login));
 		trace.setLoginUtilisateur(login);
 		trace.setDate(new Date());
 		log.info("=====> Création de la trace : {}.", trace);
@@ -136,6 +142,56 @@ public class TraceService {
 	public Trace rechercherId(int id) {
 		log.info("=====> Recherche de l'utilisateur de login {}.", id);
 		return entityManager.find(Trace.class, id);
+	}
+
+	/**
+	 * Retourne la liste des traces correspondantes aux critères de recherche
+	 * chaque parametre peut etre null
+	 */
+	public List<Trace> getListe(String loginUtilisateur, String nomUtilisateur, String typeAction, Date dateDebut,
+			Date dateFin) {
+		log.info("=====> Recherche des traces correspondant aux critères");
+
+		// Si login, nom ou typeAction n'est pas speficie, on le remplace par
+		// une chaine vide pour que la requete fonctionne sans etre changee
+		if (nomUtilisateur == null) {
+			nomUtilisateur = "";
+		}
+
+		// definition de la requete sous forme de string
+		String req = "SELECT t FROM Trace t INNER JOIN t.utilisateur u WHERE LOWER(u.nom) LIKE CONCAT('%', LOWER(:nom), '%') ";
+		if (loginUtilisateur != null) {
+			req += "AND u.login = :login ";
+		}
+		if (typeAction != null) {
+			req += "AND LOWER(t.typeAction)=LOWER(:typeAction) ";
+		}
+		if (dateDebut != null) {
+			req += "AND t.date >= :dateDebut ";
+		}
+		if (dateFin != null) {
+			req += "AND t.date <= :dateFin ";
+		}
+
+		Query requete = entityManager.createQuery(req);
+
+		// definition des parametres
+		requete.setParameter("nom", nomUtilisateur);
+		if (loginUtilisateur != null) {
+			requete.setParameter("login", loginUtilisateur);
+		}
+		if (typeAction != null) {
+			requete.setParameter("typeAction", typeAction);
+		}
+		if (dateDebut != null) {
+			requete.setParameter("dateDebut", dateDebut);
+		}
+		if (dateFin != null) {
+			requete.setParameter("dateFin", dateFin);
+		}
+
+		List<Trace> list = requete.getResultList();
+		return list;
 	}
 
 }
