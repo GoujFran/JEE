@@ -47,8 +47,12 @@ public class Initialisation {
 		Ville rennes = new Ville();
 		rennes.setCodePostal("35000");
 		rennes.setNom("Rennes");
-
 		villeService.creer(rennes);
+
+		Ville bruz = new Ville();
+		bruz.setCodePostal("35170");
+		bruz.setNom("Bruz");
+		villeService.creer(bruz);
 
 		log.info("Initialisation d'un utilisateur et administrateur par défaut dans la base...");
 		List<ProfilsUtilisateur> liste = new ArrayList<ProfilsUtilisateur>();
@@ -77,7 +81,7 @@ public class Initialisation {
 		liste2.add(ProfilsUtilisateur.UTILISATEUR);
 		Adresse adresse2 = new Adresse();
 		adresse2.setRue("rue Louis Armand");
-		adresse2.setVille(rennes);
+		adresse2.setVille(bruz);
 		Date dateNaiss2 = new Date();
 		dateNaiss2.setYear(1994);
 		dateNaiss2.setMonth(8);
@@ -93,12 +97,34 @@ public class Initialisation {
 
 		Election election = new Election("01", francoise, "Election", "Une election se prépare");
 
-		System.out.println("Election " + election.toString());
+		// Vote vote = new Vote("01", francoise, Choix.OUI);
+		// election.getVotes().add(vote);
 
 		try {
 			electionService.creerElection(election);
 		} catch (ElectionInvalideException e) {
 			e.printStackTrace();
+		}
+
+		// initialisation de plusieurs utilisateurs pour des tests
+		List<ProfilsUtilisateur> profilUtilisateur = new ArrayList<ProfilsUtilisateur>();
+		profilUtilisateur.add(ProfilsUtilisateur.UTILISATEUR);
+		Adresse adr = new Adresse();
+		Date dNaiss = new Date();
+		for (int i = 1; i < 30; i++) {
+			adr.setRue("rue n°" + i);
+			adr.setVille(rennes);
+			dNaiss.setYear(1900 + i);
+			dNaiss.setMonth(i % 12);
+			dNaiss.setDate(i % 29);
+			try {
+				utilisateursServices
+						.creer(new Utilisateur(String.valueOf(i), "nom" + i, "prenom" + i, "mdp" + i, dNaiss,
+								"mail" + i + "@blabla.fr", "http://photo" + i + "delutilisateur.jpg", profilUtilisateur,
+								adr));
+			} catch (UtilisateurInvalideException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}

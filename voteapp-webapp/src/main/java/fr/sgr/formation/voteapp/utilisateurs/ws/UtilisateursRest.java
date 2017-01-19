@@ -1,6 +1,5 @@
 package fr.sgr.formation.voteapp.utilisateurs.ws;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +13,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.sgr.formation.voteapp.fonctionnementInterne.RetourPagine;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Adresse;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationException;
 import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationService;
+import fr.sgr.formation.voteapp.utilisateurs.services.TraceService;
 import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateurInvalideException;
 import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateursServices;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,8 @@ public class UtilisateursRest {
 	private UtilisateursServices utilisateursServices;
 	@Autowired
 	private AuthentificationService authentificationService;
+	@Autowired
+	private TraceService traceService;
 
 	/**
 	 * methode pour creer un utilisateur dans le systeme / le login figurant
@@ -44,9 +47,10 @@ public class UtilisateursRest {
 	@RequestMapping(method = RequestMethod.POST)
 	public void creer(@PathVariable String login, @RequestBody Utilisateur utilisateur)
 			throws UtilisateurInvalideException, AuthentificationException {
-		log.info("=====> Création ou modification de l'utilisateur {}.", utilisateur);
+		log.info("=====> Création de l'utilisateur {}.", utilisateur);
 		authentificationService.verificationAdministrateur(login);
 		utilisateursServices.creer(utilisateur);
+		traceService.creerTraceCreationUtilisateur(login, true);
 	}
 
 	/**
@@ -104,6 +108,7 @@ public class UtilisateursRest {
 		if (adresse != null) {
 			utilisateur = utilisateursServices.modifierAdresse(utilisateur, adresse);
 		}
+		traceService.creerTraceModificationUtilisateur(login);
 
 	}
 
@@ -130,6 +135,7 @@ public class UtilisateursRest {
 		log.info("=====> Récupération de l'utilisateur de login {}.", login);
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
+		traceService.creerTraceConsultationUtilisateur(login);
 		return utilisateur;
 	}
 
@@ -142,17 +148,15 @@ public class UtilisateursRest {
 	 * @throws AuthentificationException
 	 */
 	@RequestMapping(method = RequestMethod.GET, path = "liste")
-	public List<Utilisateur> lister(@PathVariable String login, @RequestParam(required = false) String nom,
+	public RetourPagine lister(@PathVariable String login, @RequestParam(required = false) String nom,
 			@RequestParam(required = false) String prenom, @RequestParam(required = false) String ville,
-			@RequestParam(required = false) String profil) throws AuthentificationException {
+			@RequestParam(required = false) String profil, @RequestParam(required = false) Integer nbItems,
+			@RequestParam(required = false) Integer numeroPage) throws AuthentificationException {
 		log.info("=====> Récupération de la liste des utilisateurs.");
 		authentificationService.verificationAdministrateur(login);
-		List<Utilisateur> res;
-		res = utilisateursServices.getListe(nom, prenom, ville, profil);
-		// ----------------------------------------------------------------------------------------------------
-		res = new ArrayList<>();
-		res.add(new Utilisateur("id0516", nom, prenom, null, null, null, null, null, null));
-		// ----------------------------------------------------------------------------------------------------
+		List<Utilisateur> listUsers;
+		listUsers = utilisateursServices.getListe(nom, prenom, ville, profil);
+		RetourPagine res = new RetourPagine(listUsers, nbItems, numeroPage);
 		return res;
 	}
 
@@ -168,6 +172,7 @@ public class UtilisateursRest {
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		utilisateursServices.nouveauMotDePasse(utilisateur);
 		String notifications = "Le changement de mot de passe a bien été effectué.";
+		traceService.creerTraceRenouvellementMDPUtilisateur(login);
 		return notifications;
 
 	}
