@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.sgr.formation.voteapp.elections.modele.Election;
+import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException;
+import fr.sgr.formation.voteapp.elections.services.ElectionService;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Adresse;
 import fr.sgr.formation.voteapp.utilisateurs.modele.ProfilsUtilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
@@ -33,6 +36,9 @@ public class Initialisation {
 	@Autowired
 	private UtilisateursServices utilisateursServices;
 
+	@Autowired
+	private ElectionService electionService;
+
 	@SuppressWarnings("deprecation")
 	@PostConstruct
 	@Transactional(propagation = Propagation.REQUIRED)
@@ -41,8 +47,12 @@ public class Initialisation {
 		Ville rennes = new Ville();
 		rennes.setCodePostal("35000");
 		rennes.setNom("Rennes");
-
 		villeService.creer(rennes);
+
+		Ville bruz = new Ville();
+		bruz.setCodePostal("35170");
+		bruz.setNom("Bruz");
+		villeService.creer(bruz);
 
 		log.info("Initialisation d'un utilisateur et administrateur par défaut dans la base...");
 		List<ProfilsUtilisateur> liste = new ArrayList<ProfilsUtilisateur>();
@@ -63,6 +73,39 @@ public class Initialisation {
 		} catch (UtilisateurInvalideException e) {
 			e.printStackTrace();
 		}
+
+		log.info("Initialisation d'un gestionnaire et d'une élection par défault dans la base");
+
+		List<ProfilsUtilisateur> liste2 = new ArrayList<ProfilsUtilisateur>();
+		liste2.add(ProfilsUtilisateur.GERANT);
+		liste2.add(ProfilsUtilisateur.UTILISATEUR);
+		Adresse adresse2 = new Adresse();
+		adresse2.setRue("rue Louis Armand");
+		adresse2.setVille(bruz);
+		Date dateNaiss2 = new Date();
+		dateNaiss2.setYear(1994);
+		dateNaiss2.setMonth(8);
+		dateNaiss2.setDate(7);
+		Utilisateur francoise = new Utilisateur("456", "goujard", "francoise", "pw", dateNaiss2,
+				"francoise.goujard@eleve.ensai.fr", "http://rancoise_goujard.jpg", liste2, adresse2);
+
+		try {
+			utilisateursServices.creer(francoise);
+		} catch (UtilisateurInvalideException e) {
+			e.printStackTrace();
+		}
+
+		Election election = new Election("01", francoise, "Election", "Une election se prépare");
+
+		// Vote vote = new Vote("01", francoise, Choix.OUI);
+		// election.getVotes().add(vote);
+
+		try {
+			electionService.creerElection(election);
+		} catch (ElectionInvalideException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

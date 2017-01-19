@@ -1,6 +1,5 @@
 package fr.sgr.formation.voteapp.utilisateurs.ws;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,11 +148,23 @@ public class UtilisateursRest {
 		authentificationService.verificationAdministrateur(login);
 		List<Utilisateur> res;
 		res = utilisateursServices.getListe(nom, prenom, ville, profil);
-		// ----------------------------------------------------------------------------------------------------
-		res = new ArrayList<>();
-		res.add(new Utilisateur("id0516", nom, prenom, null, null, null, null, null, null));
-		// ----------------------------------------------------------------------------------------------------
 		return res;
+	}
+
+	// Pour tester : http://localhost:8080/utilisateurs/123/newMDP
+	/**
+	 * methode pour demander à changer de mot de passe
+	 * 
+	 * @throws AuthentificationException
+	 */
+	@RequestMapping(method = RequestMethod.GET, path = "newMDP")
+	public String demanderNouveauMDP(@PathVariable String login) throws AuthentificationException {
+		log.info("=====> Nouveau mot de passe.");
+		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+		utilisateursServices.nouveauMotDePasse(utilisateur);
+		String notifications = "Le changement de mot de passe a bien été effectué.";
+		return notifications;
+
 	}
 
 	@ExceptionHandler({ UtilisateurInvalideException.class })

@@ -21,9 +21,13 @@ public class ElectionInvalideException extends Exception {
 
 	public enum ErreurElection {
 		ELECTION_OBLIGATOIRE("L'élection est obligatoire pour effectuer l'opération."),
+		ID_OBLIGATOIRE("L'id est obligatoire pour effectuer l'opération."),
 		PROPRIETAIRE_OBLIGATOIRE("Le propriétaire est obligatoire pour effectuer l'opération."),
 		TITRE_OBLIGATOIRE("Le titre de l'éléction est obligatoire."),
-		DESCRIPTION_OBLIGATOIRE("La description de l'éléction est obligatoire."),;
+		DESCRIPTION_OBLIGATOIRE("La description de l'éléction est obligatoire."),
+		NON_PROPRIETAIRE("Seul le propriétaire de l'élection peut effectuer l'opération."),
+		DEJA_VOTE("Vous avez déjà voté à cette élection."),
+		ELECTION_CLOTUREE("Cette élection a été coturé, vous ne puvais plus voter.");
 
 		@Getter
 		public String message;

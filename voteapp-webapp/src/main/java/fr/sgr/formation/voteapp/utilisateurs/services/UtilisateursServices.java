@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,11 +100,56 @@ public class UtilisateursServices {
 
 	/**
 	 * Retourne la liste des utilisateurs correspondant au critère de recherche
+	 * chaque parametre peut etre null
 	 */
 	public List<Utilisateur> getListe(String nom, String prenom, String ville, String profil) {
 		log.info("=====> Recherche des utilisateurs correspondant aux critères");
-		// TODO
-		return null;
+		// Si nom ou prenom n'est pas speficie, on le remplace par une chaine
+		// vide pour que la requete fonctionne sans etre changee
+		if (nom == null) {
+			nom = "";
+		}
+		if (prenom == null) {
+			prenom = "";
+		}
+		// requete si ni ville ni profil n'est precise :
+		Query requete = entityManager.createQuery(
+				"SELECT u FROM Utilisateur u "
+						+ "WHERE LOWER(u.nom) LIKE CONCAT('%', LOWER(:lastName), '%') "
+						+ "AND LOWER(u.prenom) LIKE CONCAT('%', LOWER(:firstName), '%')");
+
+		// si une ville est precisee
+		if (ville != null) {
+			if (profil != null) {// si un profil a ete precise
+				requete = entityManager.createQuery(
+						"SELECT u FROM Utilisateur u INNER JOIN u.profils p INNER JOIN u.adresse.ville v "
+								+ "WHERE LOWER(u.nom) LIKE CONCAT('%', LOWER(:lastName), '%') "
+								+ "AND LOWER(u.prenom) LIKE CONCAT('%', LOWER(:firstName), '%') "
+								+ "AND LOWER(p)=LOWER(:profil) "
+								+ "AND LOWER(v.nom) = LOWER(:city)");
+				requete.setParameter("profil", profil);
+			} else {// si aucun profil n'a ete precise
+				requete = entityManager.createQuery(
+						"SELECT u FROM Utilisateur u INNER JOIN u.adresse.ville v "
+								+ "WHERE LOWER(u.nom) LIKE CONCAT('%', LOWER(:lastName), '%') "
+								+ "AND LOWER(u.prenom) LIKE CONCAT('%', LOWER(:firstName), '%') "
+								+ "AND LOWER(v.nom) = LOWER(:city)");
+			}
+			requete.setParameter("city", ville);
+		} else { // si aucune ville n'a ete precisee
+			if (profil != null) {// si un profil a ete precise
+				requete = entityManager.createQuery(
+						"SELECT u FROM Utilisateur u INNER JOIN u.profils p "
+								+ "WHERE LOWER(u.nom) LIKE CONCAT('%', LOWER(:lastName), '%') "
+								+ "AND LOWER(u.prenom) LIKE CONCAT('%', LOWER(:firstName), '%') "
+								+ "AND LOWER(p)=LOWER(:profil)");
+				requete.setParameter("profil", profil);
+			}
+		}
+		requete.setParameter("lastName", nom);
+		requete.setParameter("firstName", prenom);
+		List<Utilisateur> list = requete.getResultList();
+		return list;
 	}
 
 	/**
@@ -209,6 +255,23 @@ public class UtilisateursServices {
 		liste = utilisateur.getProfils();
 		liste.add(ProfilsUtilisateur.ADMINISTRATEUR);
 		utilisateur.setProfils(liste);
+		return utilisateur;
+	}
+
+	/**
+	 * Génération d'un nouveau mot de passe pour l'utilisateur
+	 * 
+	 * @return Retourne l'utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur nouveauMotDePasse(Utilisateur utilisateur) {
+		log.info("=====> Génération d'un nouveau mot de passe pour l'utilisateur {} .", utilisateur);
+		double numero = Math.random() * 1000;
+		int entier = (int) Math.round(numero);
+		String nouveauMDP = String.valueOf(entier);
+		utilisateur.setMotDePasse(nouveauMDP);
+		String adresseMail = utilisateur.getEmail();
+		log.info("=====> Envoie du nouveau mot de passe {}, à l'adresse {}.", nouveauMDP, adresseMail);
 		return utilisateur;
 	}
 
