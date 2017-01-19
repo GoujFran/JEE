@@ -1,5 +1,7 @@
 package fr.sgr.formation.voteapp;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,9 +64,11 @@ public class Initialisation {
 		adresse.setRue("rue truc bidule");
 		adresse.setVille(rennes);
 		Date dateNaiss = new Date();
-		dateNaiss.setYear(1994);
-		dateNaiss.setMonth(8);
-		dateNaiss.setDate(7);
+		try {
+			dateNaiss = new SimpleDateFormat("dd/MM/yyyy").parse("07/08/1994");
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
 		Utilisateur laure = new Utilisateur("123", "nicollet", "laure", "mdp", dateNaiss,
 				"laure.nicollet@eleve.ensai.fr", "http://photodelutilisateur.jpg", liste, adresse);
 
@@ -83,9 +87,11 @@ public class Initialisation {
 		adresse2.setRue("rue Louis Armand");
 		adresse2.setVille(bruz);
 		Date dateNaiss2 = new Date();
-		dateNaiss2.setYear(1994);
-		dateNaiss2.setMonth(8);
-		dateNaiss2.setDate(7);
+		try {
+			dateNaiss2 = new SimpleDateFormat("dd/MM/yyyy").parse("12/02/1994");
+		} catch (ParseException e1) {
+			e1.printStackTrace();
+		}
 		Utilisateur francoise = new Utilisateur("456", "goujard", "francoise", "pw", dateNaiss2,
 				"francoise.goujard@eleve.ensai.fr", "http://rancoise_goujard.jpg", liste2, adresse2);
 
@@ -114,9 +120,11 @@ public class Initialisation {
 		for (int i = 1; i < 30; i++) {
 			adr.setRue("rue n°" + i);
 			adr.setVille(rennes);
-			dNaiss.setYear(1900 + i);
-			dNaiss.setMonth(i % 12);
-			dNaiss.setDate(i % 29);
+			try {
+				dNaiss = new SimpleDateFormat("dd/MM/yyyy").parse("01/01/1987");
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}
 			try {
 				utilisateursServices
 						.creer(new Utilisateur(String.valueOf(i), "nom" + i, "prenom" + i, "mdp" + i, dNaiss,

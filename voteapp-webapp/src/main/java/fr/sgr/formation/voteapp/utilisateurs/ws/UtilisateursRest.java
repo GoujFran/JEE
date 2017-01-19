@@ -68,11 +68,14 @@ public class UtilisateursRest {
 	public void modifier(@PathVariable String login, @RequestParam(required = false) String nom,
 			@RequestParam(required = false) String prenom, @RequestParam(required = false) String email,
 			@RequestParam(required = false) String motDePasse,
-			@RequestParam(required = false) String date,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date date,
 			@RequestBody(required = false) Adresse adresse, @RequestParam(required = false) String loginUtilisateur,
 			@RequestParam(required = false) String admin)
 					throws UtilisateurInvalideException, AuthentificationException {
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+
+		/** Validation de l'existence de l'utilisateur. */
+		authentificationService.verificationExistence(utilisateur);
 
 		if (loginUtilisateur != null && !loginUtilisateur.isEmpty()) {
 			authentificationService.verificationAdministrateur(login);
@@ -102,9 +105,7 @@ public class UtilisateursRest {
 		}
 
 		// La date en string doit être écrite au format JJ/MM/YYYY
-		// Attention (TODO ne pas oublier): Les dates doivent être corrigées
-		// (YYYY-1900 et MM-1)
-		if (date != null && !date.isEmpty()) {
+		if (date != null) {
 			utilisateur = utilisateursServices.modifierDateNaissance(utilisateur, date);
 		}
 
@@ -172,8 +173,8 @@ public class UtilisateursRest {
 	public RetourPagine listerTraces(@PathVariable String login,
 			@RequestParam(required = false) String loginUtilisateur,
 			@RequestParam(required = false) String nomUtilisateur, @RequestParam(required = false) String typeAction,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/mm/yyyy") Date dateDebut,
-			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/mm/yyyy") Date dateFin,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date dateDebut,
+			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date dateFin,
 			@RequestParam(required = false) Integer nbItems, @RequestParam(required = false) Integer numeroPage)
 					throws AuthentificationException {
 		log.info("=====> Récupération de la liste des traces.");
@@ -194,6 +195,7 @@ public class UtilisateursRest {
 	public String demanderNouveauMDP(@PathVariable String login) throws AuthentificationException {
 		log.info("=====> Nouveau mot de passe.");
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+		authentificationService.verificationExistence(utilisateur);
 		utilisateursServices.nouveauMotDePasse(utilisateur);
 		String notifications = "Le changement de mot de passe a bien été effectué.";
 		traceService.creerTraceRenouvellementMDPUtilisateur(login);
