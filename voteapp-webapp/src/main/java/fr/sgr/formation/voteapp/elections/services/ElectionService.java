@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -137,12 +138,27 @@ public class ElectionService {
 		election.setImages(images);
 	}
 
-	public void listerElection() {
-		// TODO
+	public List<Election> listerElection(String profil) {
+		log.info("=====> Recherche des élections correspondant aux critères");
+		Query requete = entityManager.createQuery(
+				"SELECT e FROM Elections e");
+		if (!profil.isEmpty()) {
+			requete = entityManager.createQuery(
+					"SELECT e FROM Elections e INNER JOIN e.profils p "
+							+ "AND LOWER(p)=LOWER(:profil) ");
+			requete.setParameter("profil", profil);
+		}
+		List<Election> list = requete.getResultList();
+		return list;
 	}
 
-	public void consulterRésultats() {
-		// TODO
+	public void consulterRésultats(String id) throws ElectionInvalideException {
+		Election election = recupererElection(id);
+		if (election.getDateCloture() == null) {
+			throw new ElectionInvalideException(ErreurElection.ELECTION_NON_CLOTUREE);
+		}
+		List<Vote> votes = election.getVotes();
+
 	}
 
 	/**
