@@ -44,6 +44,9 @@ public class UtilisateursServices {
 	@Autowired
 	private EntityManager entityManager;
 
+	@Autowired
+	private TraceService traceService;
+
 	/**
 	 * Crée un nouvel utilisateur sur le système.
 	 * 
@@ -216,16 +219,10 @@ public class UtilisateursServices {
 	 * @return Retourne l'utilisateur modifié.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED)
-	public Utilisateur modifierDateNaissance(Utilisateur utilisateur, String dateDeNaissance) {
+	public Utilisateur modifierDateNaissance(Utilisateur utilisateur, Date dateDeNaissance) {
 		log.info("=====> Modification de la date de naissance de l'utilisateur {} par {}.", utilisateur,
 				dateDeNaissance);
-		Date date = new Date();
-		String[] myTable = dateDeNaissance.split("/");
-		date.setDate(Integer.parseInt(myTable[0]));
-		date.setMonth(Integer.parseInt(myTable[1]));
-		date.setYear(Integer.parseInt(myTable[2]));
-
-		utilisateur.setDateDeNaissance(date);
+		utilisateur.setDateDeNaissance(dateDeNaissance);
 		return utilisateur;
 	}
 
@@ -271,7 +268,7 @@ public class UtilisateursServices {
 		String nouveauMDP = String.valueOf(entier);
 		utilisateur.setMotDePasse(nouveauMDP);
 		String adresseMail = utilisateur.getEmail();
-		log.info("=====> Envoie du nouveau mot de passe {}, à l'adresse {}.", nouveauMDP, adresseMail);
+		log.info("=====> Envoi du nouveau mot de passe {}, à l'adresse {}.", nouveauMDP, adresseMail);
 		return utilisateur;
 	}
 

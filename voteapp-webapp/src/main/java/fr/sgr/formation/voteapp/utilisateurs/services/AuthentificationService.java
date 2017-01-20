@@ -21,6 +21,22 @@ public class AuthentificationService {
 	private UtilisateurProfil utilisateurProfil;
 
 	/**
+	 * lève une exception si l'utilisateur identifié par son login n'existe pas
+	 * 
+	 * @param login
+	 *            Login identifiant l'utilisateur.
+	 * @throws AuthentificationException
+	 */
+	public void verificationExistence(Utilisateur utilisateur) throws AuthentificationException {
+		log.info("=====> Vérification de l'existence de l'utilisateur {}.", utilisateur);
+
+		/** Validation de l'existence de l'utilisateur. */
+		if (utilisateur == null) {
+			throw new AuthentificationException(ErreurAuthentification.UTILISATEUR_INEXISTANT);
+		}
+	}
+
+	/**
 	 * lève une exception si l'utilisateur identifié par son login n'est pas
 	 * administrateur
 	 * 
@@ -31,6 +47,8 @@ public class AuthentificationService {
 	public void verificationAdministrateur(String login) throws AuthentificationException {
 		log.info("=====> Vérification du statut d'aministrateur de l'utilisateur de login {}.", login);
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+
+		verificationExistence(utilisateur);
 
 		/** Validation du statut d'administrateur correspondant au login */
 		if (!utilisateurProfil.isAdministrateur(utilisateur)) {
@@ -49,7 +67,9 @@ public class AuthentificationService {
 	public void verificationMotdePasse(Utilisateur utilisateur, String motDePasse) throws AuthentificationException {
 		log.info("=====> Vérification du mot de passe {}.", motDePasse);
 
-		/** Validation du statut d'administrateur correspondant au login */
+		verificationExistence(utilisateur);
+
+		/** Validité du mot de passe */
 		if (!utilisateur.getMotDePasse().equals(motDePasse)) {
 			throw new AuthentificationException(ErreurAuthentification.MAUVAIS_MDP);
 		}
@@ -65,8 +85,9 @@ public class AuthentificationService {
 	 */
 	public void verificationGerant(String login) throws AuthentificationException {
 		log.info("=====> Vérification du statut de gérant de l'utilisateur de login {}.", login);
-
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+
+		verificationExistence(utilisateur);
 
 		/** Validation du statut d'administrateur correspondant au login */
 		if (!utilisateurProfil.isGerant(utilisateur)) {
