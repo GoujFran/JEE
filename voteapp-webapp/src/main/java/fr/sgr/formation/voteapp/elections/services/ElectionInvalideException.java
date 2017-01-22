@@ -27,8 +27,9 @@ public class ElectionInvalideException extends Exception {
 		DESCRIPTION_OBLIGATOIRE("La description de l'éléction est obligatoire."),
 		NON_PROPRIETAIRE("Seul le propriétaire de l'élection peut effectuer l'opération."),
 		DEJA_VOTE("Vous avez déjà voté à cette élection."),
-		ELECTION_CLOTUREE("Cette élection a été coturé, vous ne pouvais plus voter."),
+		ELECTION_CLOTUREE("Cette élection a été coturé, vous ne pouvez plus voter."),
 		ELECTION_NON_CLOTUREE("Cette élection n'est pas encore finie.");
+
 		@Getter
 		public String message;
 

@@ -61,11 +61,13 @@ public class UtilisateursServices {
 		log.info("=====> Création de l'utilisateur : {}.", utilisateur);
 
 		if (utilisateur == null) {
+			traceService.creerTraceErreur("UTILISATEUR_OBLIGATOIRE");
 			throw new UtilisateurInvalideException(ErreurUtilisateur.UTILISATEUR_OBLIGATOIRE);
 		}
 
 		/** Validation de l'existance de l'utilisateur. */
 		if (rechercherParLogin(utilisateur.getLogin()) != null) {
+			traceService.creerTraceErreur("UTILISATEUR_EXISTANT");
 			throw new UtilisateurInvalideException(ErreurUtilisateur.UTILISATEUR_EXISTANT);
 		}
 

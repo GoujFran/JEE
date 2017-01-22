@@ -30,11 +30,18 @@ public class Trace {
 	private int id;
 	@ManyToOne
 	private Utilisateur utilisateur;
-	private String loginUtilisateur;
 	private String typeAction;
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date date;
 	private String resultatAction;
 	private String description;
+
+	public Trace(Trace trace) {
+		this.utilisateur = trace.getUtilisateur();
+		this.typeAction = trace.getTypeAction();
+		this.date = trace.getDate();
+		this.resultatAction = trace.getResultatAction();
+		this.description = trace.getDescription();
+	}
 
 }

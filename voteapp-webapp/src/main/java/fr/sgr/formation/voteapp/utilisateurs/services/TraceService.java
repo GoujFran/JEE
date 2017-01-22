@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import fr.sgr.formation.voteapp.notifications.services.NotificationsServices;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Trace;
+import fr.sgr.formation.voteapp.utilisateurs.ws.UtilisateursRest;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -41,94 +42,46 @@ public class TraceService {
 	 * @return trace créé.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED)
-	public Trace creer(Trace trace, String login) {
-		trace.setUtilisateur(utilisateurServices.rechercherParLogin(login));
-		trace.setLoginUtilisateur(login);
+	public Trace creer(Trace trace) {
 		trace.setDate(new Date());
-		log.info("=====> Création de la trace : {}.", trace);
+		Trace myTrace = new Trace(trace);
+		log.info("=====> Création de la trace : {}.", myTrace);
 
 		/** Notification de l'événement de création */
-		notificationsServices.notifier("Création de la trace: " + trace.toString());
+		notificationsServices.notifier("Création de la trace: " + myTrace.toString());
 
 		/** Persistance de l'utilisateur. */
-		entityManager.persist(trace);
+		entityManager.persist(myTrace);
 
-		return trace;
-	}
-
-	/**
-	 * Crée une trace de consultation d'un utilisateur.
-	 * 
-	 * @param login
-	 * @return trace créé.
-	 */
-	@Transactional(propagation = Propagation.REQUIRED)
-	public Trace creerTraceConsultationUtilisateur(String login) {
-		log.info("=====> Création d'une trace de consultation.");
-
-		Trace myTrace = new Trace();
-		myTrace.setDescription("description");
-		myTrace.setResultatAction("Consultation OK");
-		myTrace.setTypeAction("Consultation d'un utilisateur");
-		myTrace = this.creer(myTrace, login);
 		return myTrace;
 	}
 
 	/**
-	 * Crée une trace de création d'un utilisateur.
+	 * Crée une trace OK.
 	 * 
 	 * @param login
 	 * @return trace créé.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED)
-	public Trace creerTraceCreationUtilisateur(String login, boolean succes) {
-		log.info("=====> Création d'une trace de création.");
-
+	public Trace creerTraceOK() {
 		Trace myTrace = new Trace();
-		myTrace.setDescription("description");
-		if (succes) {
-			myTrace.setResultatAction("Création OK");
-		} else {
-			myTrace.setResultatAction("Création en erreur");
-		}
-		myTrace.setTypeAction("Création d'un utilisateur");
-		myTrace = this.creer(myTrace, login);
+		UtilisateursRest.traceStatic.setResultatAction("OK");
+		myTrace = this.creer(UtilisateursRest.traceStatic);
 		return myTrace;
 	}
 
 	/**
-	 * Crée une trace de renouvellement de mot de passe d'un utilisateur.
+	 * Crée une trace erreur.
 	 * 
 	 * @param login
 	 * @return trace créé.
 	 */
 	@Transactional(propagation = Propagation.REQUIRED)
-	public Trace creerTraceRenouvellementMDPUtilisateur(String login) {
-		log.info("=====> Création d'une trace de renouvellement de mot de passe.");
-
+	public Trace creerTraceErreur(String description) {
 		Trace myTrace = new Trace();
-		myTrace.setDescription("description");
-		myTrace.setResultatAction("Renouvellement OK");
-		myTrace.setTypeAction("Renouvellement d'un mot de passe");
-		myTrace = this.creer(myTrace, login);
-		return myTrace;
-	}
-
-	/**
-	 * Crée une trace de modification d'un utilisateur.
-	 * 
-	 * @param login
-	 * @return trace créé.
-	 */
-	@Transactional(propagation = Propagation.REQUIRED)
-	public Trace creerTraceModificationUtilisateur(String login) {
-		log.info("=====> Création d'une trace de modification d'un utilisateur.");
-
-		Trace myTrace = new Trace();
-		myTrace.setDescription("description");
-		myTrace.setResultatAction("Modification OK");
-		myTrace.setTypeAction("Modification d'un utilisateur");
-		myTrace = this.creer(myTrace, login);
+		UtilisateursRest.traceStatic.setResultatAction("En erreur");
+		UtilisateursRest.traceStatic.setDescription(description);
+		myTrace = this.creer(UtilisateursRest.traceStatic);
 		return myTrace;
 	}
 

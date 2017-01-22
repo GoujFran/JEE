@@ -19,6 +19,8 @@ public class AuthentificationService {
 	private UtilisateursServices utilisateursServices;
 	@Autowired
 	private UtilisateurProfil utilisateurProfil;
+	@Autowired
+	private TraceService traceService;
 
 	/**
 	 * lève une exception si l'utilisateur identifié par son login n'existe pas
@@ -32,6 +34,7 @@ public class AuthentificationService {
 
 		/** Validation de l'existence de l'utilisateur. */
 		if (utilisateur == null) {
+			traceService.creerTraceErreur("UTILISATEUR_INEXISTANT");
 			throw new AuthentificationException(ErreurAuthentification.UTILISATEUR_INEXISTANT);
 		}
 	}
@@ -52,6 +55,7 @@ public class AuthentificationService {
 
 		/** Validation du statut d'administrateur correspondant au login */
 		if (!utilisateurProfil.isAdministrateur(utilisateur)) {
+			traceService.creerTraceErreur("ADMINISTRATEUR_OBLIGATOIRE");
 			throw new AuthentificationException(ErreurAuthentification.ADMINISTRATEUR_OBLIGATOIRE);
 		}
 	}
@@ -71,6 +75,7 @@ public class AuthentificationService {
 
 		/** Validité du mot de passe */
 		if (!utilisateur.getMotDePasse().equals(motDePasse)) {
+			traceService.creerTraceErreur("MAUVAIS_MDP");
 			throw new AuthentificationException(ErreurAuthentification.MAUVAIS_MDP);
 		}
 	}
@@ -91,6 +96,7 @@ public class AuthentificationService {
 
 		/** Validation du statut d'administrateur correspondant au login */
 		if (!utilisateurProfil.isGerant(utilisateur)) {
+			traceService.creerTraceErreur("GERANT_OBLIGATOIRE");
 			throw new AuthentificationException(ErreurAuthentification.GERANT_OBLIGATOIRE);
 		}
 	}
