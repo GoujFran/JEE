@@ -1,0 +1,11 @@
+**/.settings
+**/target
+**/.project
+**/.classpath
+
+.settings
+target
+.project
+.classpath
+/.~lock.ClientServeur-TPNote.odt#
+
