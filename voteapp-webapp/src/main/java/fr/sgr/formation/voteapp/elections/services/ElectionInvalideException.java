@@ -28,7 +28,8 @@ public class ElectionInvalideException extends Exception {
 		NON_PROPRIETAIRE("Seul le propriétaire de l'élection peut effectuer l'opération."),
 		DEJA_VOTE("Vous avez déjà voté à cette élection."),
 		ELECTION_CLOTUREE("Cette élection a été coturé, vous ne pouvez plus voter."),
-		ELECTION_NON_CLOTUREE("Cette élection n'est pas encore finie.");
+		ELECTION_NON_CLOTUREE("Cette élection n'est pas encore finie."),
+		VOTE_NON_VALIDE("Votre vote n'est pas valide.");
 
 		@Getter
 		public String message;

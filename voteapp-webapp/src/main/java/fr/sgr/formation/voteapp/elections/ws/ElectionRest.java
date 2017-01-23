@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.sgr.formation.voteapp.elections.modele.Election;
-import fr.sgr.formation.voteapp.elections.modele.Vote;
 import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException;
 import fr.sgr.formation.voteapp.elections.services.ElectionService;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
@@ -126,7 +125,7 @@ public class ElectionRest {
 
 	@RequestMapping(method = RequestMethod.PUT, path = "voter")
 	public void voter(@PathVariable String id, @RequestParam String login, @RequestParam String motDePasse,
-			@RequestBody Vote vote) throws AuthentificationException, ElectionInvalideException {
+			@RequestParam String choix) throws AuthentificationException, ElectionInvalideException {
 		log.info("=====> Cloture de l'élection {} par {}.", id, login);
 
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
@@ -134,7 +133,7 @@ public class ElectionRest {
 
 		Election election = electionService.recupererElection(id);
 
-		electionService.voter(election, utilisateur, vote);
+		electionService.voter(election, utilisateur, choix);
 	}
 
 	@ExceptionHandler({ UtilisateurInvalideException.class })

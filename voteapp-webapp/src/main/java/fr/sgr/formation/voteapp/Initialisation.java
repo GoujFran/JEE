@@ -103,11 +103,10 @@ public class Initialisation {
 
 		Election election = new Election("01", francoise, "Election", "Une election se prépare");
 
-		// Vote vote = new Vote("01", francoise, Choix.OUI);
-		// election.getVotes().add(vote);
-
 		try {
 			electionService.creerElection(election);
+			electionService.voter(election, laure, "oui");
+			electionService.voter(election, francoise, "non");
 		} catch (ElectionInvalideException e) {
 			e.printStackTrace();
 		}

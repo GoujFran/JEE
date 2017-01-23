@@ -26,6 +26,8 @@ public class Vote {
 	private String idVote;
 	@ManyToOne
 	private Utilisateur utilisateur;
+	@ManyToOne
+	private Election election;
 	@Enumerated(EnumType.STRING)
 	private Choix choix;
 }

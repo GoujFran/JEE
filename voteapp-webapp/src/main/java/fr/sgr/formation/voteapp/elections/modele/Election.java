@@ -8,7 +8,6 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
 import lombok.AllArgsConstructor;
@@ -36,13 +35,6 @@ public class Election {
 	@ElementCollection(targetClass = String.class)
 	private List<String> images = new LinkedList<String>();
 	private Date dateCloture;
-	@Singular
-	@ElementCollection(targetClass = Vote.class)
-	private List<Vote> votes = new LinkedList<Vote>();
-	@Singular
-	@ElementCollection(targetClass = Utilisateur.class)
-	@OneToMany
-	private List<Utilisateur> listeVotants = new LinkedList<Utilisateur>();
 
 	public Election(String id, Utilisateur propriétaire, String titre, String description) {
 		this.id = id;
