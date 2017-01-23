@@ -40,6 +40,8 @@ public class UtilisateursServices {
 	/** Services de notification des événements. */
 	@Autowired
 	private NotificationsServices notificationsServices;
+	@Autowired
+	private VilleService villeService;
 
 	@Autowired
 	private EntityManager entityManager;
@@ -77,11 +79,28 @@ public class UtilisateursServices {
 		 */
 		validationServices.validerUtilisateur(utilisateur);
 
+		utilisateur = villeService.creerVilleSiBesoin(utilisateur);
+
 		/** Notification de l'événement de création */
 		notificationsServices.notifier("Création de l'utilisateur: " + utilisateur.toString());
 
 		/** Persistance de l'utilisateur. */
 		entityManager.persist(utilisateur);
+
+		return utilisateur;
+	}
+
+	/**
+	 * Modifie un utilisateur sur le système.
+	 * 
+	 * @param utilisateur
+	 *            Utilisateur à modifier.
+	 * @return Utilisateur modifié.
+	 */
+	@Transactional(propagation = Propagation.REQUIRED)
+	public Utilisateur modifier(Utilisateur utilisateur) throws UtilisateurInvalideException {
+
+		// TODO
 
 		return utilisateur;
 	}

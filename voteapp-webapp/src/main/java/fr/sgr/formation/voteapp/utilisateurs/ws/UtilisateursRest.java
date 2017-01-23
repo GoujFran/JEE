@@ -53,11 +53,14 @@ public class UtilisateursRest {
 	public void creer(@PathVariable String login, @RequestBody Utilisateur utilisateur)
 			throws UtilisateurInvalideException, AuthentificationException {
 		log.info("=====> Création de l'utilisateur {}.", utilisateur);
+
 		traceStatic.setTypeAction("Création d'un utilisateur");
 		traceStatic.setDescription("Création");
 		traceStatic.setUtilisateur(utilisateursServices.rechercherParLogin(login));
+
 		authentificationService.verificationAdministrateur(login);
 		utilisateursServices.creer(utilisateur);
+
 		traceService.creerTraceOK();
 	}
 
@@ -120,13 +123,8 @@ public class UtilisateursRest {
 		if (adresse != null) {
 			utilisateur = utilisateursServices.modifierAdresse(utilisateur, adresse);
 		}
+
 		traceService.creerTraceOK();
-
-	}
-
-	@RequestMapping(method = RequestMethod.DELETE)
-	public void supprimer(@PathVariable String login) {
-		log.info("=====> Suppression de l'utilisateur de login {}.", login);
 
 	}
 
@@ -149,7 +147,11 @@ public class UtilisateursRest {
 		log.info("=====> Récupération de l'utilisateur de login {}.", login);
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		traceStatic.setUtilisateur(utilisateur);
+
+		/** Validation de l'existence de l'utilisateur. */
+		authentificationService.verificationExistence(utilisateur);
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
+
 		traceService.creerTraceOK();
 		return utilisateur;
 	}
@@ -196,10 +198,12 @@ public class UtilisateursRest {
 		traceStatic.setTypeAction("Récupération de la liste des traces.");
 		traceStatic.setDescription("Récupération traces");
 		traceStatic.setUtilisateur(utilisateursServices.rechercherParLogin(login));
+
 		authentificationService.verificationAdministrateur(login);
 		List<Trace> listTraces;
 		listTraces = traceService.getListe(loginUtilisateur, nomUtilisateur, typeAction, dateDebut, dateFin);
 		RetourPagine res = new RetourPagine(listTraces, nbItems, numeroPage);
+
 		traceService.creerTraceOK();
 		return res;
 	}
@@ -217,9 +221,11 @@ public class UtilisateursRest {
 		traceStatic.setDescription("Nouveau mot de passe");
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		traceStatic.setUtilisateur(utilisateursServices.rechercherParLogin(login));
+
 		authentificationService.verificationExistence(utilisateur);
 		utilisateursServices.nouveauMotDePasse(utilisateur);
 		String notifications = "Le changement de mot de passe a bien été effectué.";
+
 		traceService.creerTraceOK();
 		return notifications;
 

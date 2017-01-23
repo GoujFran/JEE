@@ -105,14 +105,15 @@ public class TraceService {
 			Date dateFin) {
 		log.info("=====> Recherche des traces correspondant aux critères");
 
-		// Si login, nom ou typeAction n'est pas speficie, on le remplace par
-		// une chaine vide pour que la requete fonctionne sans etre changee
-		if (nomUtilisateur == null) {
-			nomUtilisateur = "";
-		}
-
 		// definition de la requete sous forme de string
-		String req = "SELECT t FROM Trace t INNER JOIN t.utilisateur u WHERE LOWER(u.nom) LIKE CONCAT('%', LOWER(:nom), '%') ";
+		String req = "SELECT t FROM Trace t LEFT JOIN t.utilisateur u WHERE 0=0 ";
+		if (nomUtilisateur == null && loginUtilisateur == null && typeAction == null && dateDebut == null
+				&& dateFin == null) {
+			req = "SELECT t FROM Trace t";
+		}
+		if (nomUtilisateur != null) {
+			req += "AND LOWER(u.nom) LIKE CONCAT('%', LOWER(:nom), '%') ";
+		}
 		if (loginUtilisateur != null) {
 			req += "AND u.login = :login ";
 		}
@@ -129,7 +130,9 @@ public class TraceService {
 		Query requete = entityManager.createQuery(req);
 
 		// definition des parametres
-		requete.setParameter("nom", nomUtilisateur);
+		if (nomUtilisateur != null) {
+			requete.setParameter("nom", nomUtilisateur);
+		}
 		if (loginUtilisateur != null) {
 			requete.setParameter("login", loginUtilisateur);
 		}
