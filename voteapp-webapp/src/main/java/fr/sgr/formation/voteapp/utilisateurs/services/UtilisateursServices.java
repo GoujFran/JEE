@@ -17,6 +17,7 @@ import fr.sgr.formation.voteapp.notifications.services.NotificationsServices;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Adresse;
 import fr.sgr.formation.voteapp.utilisateurs.modele.ProfilsUtilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
+import fr.sgr.formation.voteapp.utilisateurs.modele.Ville;
 import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateurInvalideException.ErreurUtilisateur;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +42,11 @@ public class UtilisateursServices {
 	@Autowired
 	private NotificationsServices notificationsServices;
 	@Autowired
+	private AuthentificationService authentificationService;
+	@Autowired
 	private VilleService villeService;
+	@Autowired
+	private ProfilsServices profilService;
 
 	@Autowired
 	private EntityManager entityManager;
@@ -96,13 +101,60 @@ public class UtilisateursServices {
 	 * @param utilisateur
 	 *            Utilisateur à modifier.
 	 * @return Utilisateur modifié.
+	 * @throws AuthentificationException
 	 */
 	@Transactional(propagation = Propagation.REQUIRED)
-	public Utilisateur modifier(Utilisateur utilisateur) throws UtilisateurInvalideException {
+	public Utilisateur modifier(Utilisateur utilisateur, String loginUtilisateur, String nom, String prenom,
+			String email, String motDePasse, Date date, Adresse adresse, String[] profil)
+					throws UtilisateurInvalideException, AuthentificationException {
 
-		// TODO
+		// si aucun loginUtilisateur n'est specifie, on considere que
+		// l'utilisateur login modifie sa propre fiche
+		Utilisateur utilisateurModifie = utilisateur;
+		if (loginUtilisateur != null && !loginUtilisateur.isEmpty()) {
+			utilisateurModifie = rechercherParLogin(loginUtilisateur);
+			authentificationService.verificationAdministrateur(utilisateur.getLogin());
+		}
 
-		return utilisateur;
+		if (profil.length != 0 && profil != null) {
+			// il faut etre admin pour changer des profils
+			authentificationService.verificationAdministrateur(utilisateur.getLogin());
+			profilService.attribuerProfils(utilisateurModifie, profil);
+		}
+
+		log.info("=====> Modification de l'utilisateur {}.", utilisateurModifie);
+		if (nom != null && !nom.isEmpty()) {
+			utilisateurModifie = modifierNom(utilisateurModifie, nom);
+		}
+
+		if (prenom != null && !prenom.isEmpty()) {
+			utilisateurModifie = modifierPrenom(utilisateurModifie, prenom);
+		}
+
+		if (email != null && !email.isEmpty()) {
+			utilisateurModifie = modifierEmail(utilisateurModifie, email);
+		}
+
+		if (motDePasse != null && !motDePasse.isEmpty()) {
+			utilisateurModifie = modifierMDP(utilisateurModifie, motDePasse);
+		}
+
+		// La date en string doit être écrite au format JJ/MM/YYYY
+		if (date != null) {
+			utilisateurModifie = modifierDateNaissance(utilisateurModifie, date);
+		}
+
+		if (adresse != null) {
+			utilisateurModifie = modifierAdresse(utilisateurModifie, adresse);
+		}
+
+		/** Notification de l'événement de modification */
+		notificationsServices.notifier("Modification de l'utilisateur: " + utilisateurModifie.toString());
+
+		/** Persistance de l'utilisateur. */
+		entityManager.persist(utilisateurModifie);
+
+		return utilisateurModifie;
 	}
 
 	/**
@@ -257,6 +309,21 @@ public class UtilisateursServices {
 	@Transactional(propagation = Propagation.REQUIRED)
 	public Utilisateur modifierAdresse(Utilisateur utilisateur, Adresse adresse) {
 		log.info("=====> Modification de l'adresse de l'utilisateur {} par {}.", utilisateur, adresse);
+
+		String cp = adresse.getVille().getCodePostal();
+		String nom = adresse.getVille().getNom();
+
+		if (villeService.rechercherVille(cp, nom) == null) {
+			// si la ville n'existe pas en base on la cree
+			Ville v = new Ville();
+			v.setCodePostal(cp);
+			v.setNom(nom);
+			adresse.setVille(v);
+			villeService.creer(v);
+		} else {
+			adresse.setVille(villeService.rechercherVille(cp, nom));
+		}
+
 		utilisateur.setAdresse(adresse);
 		return utilisateur;
 	}

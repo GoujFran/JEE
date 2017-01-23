@@ -78,51 +78,19 @@ public class UtilisateursRest {
 			@RequestParam(required = false) String motDePasse,
 			@RequestParam(required = false) @DateTimeFormat(pattern = "dd/MM/yyyy") Date date,
 			@RequestBody(required = false) Adresse adresse, @RequestParam(required = false) String loginUtilisateur,
-			@RequestParam(required = false) String admin)
+			@RequestParam(required = false) String[] profil)
 					throws UtilisateurInvalideException, AuthentificationException {
 		traceStatic.setTypeAction("Modification d'un utilisateur");
 		traceStatic.setDescription("Modification");
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		traceStatic.setUtilisateur(utilisateur);
 
-		/** Validation de l'existence de l'utilisateur. */
+		/** Validation de l'existence des utilisateurs. */
 		authentificationService.verificationExistence(utilisateur);
 
-		if (loginUtilisateur != null && !loginUtilisateur.isEmpty()) {
-			authentificationService.verificationAdministrateur(login);
-			utilisateur = utilisateursServices.rechercherParLogin(loginUtilisateur);
-			if (admin != null && !admin.isEmpty()) {
-				utilisateur = utilisateursServices.toAdmin(utilisateur);
-			}
-		}
-
-		log.info("=====> Modification de l'utilisateur {}.", utilisateur);
-		if (nom != null && !nom.isEmpty()) {
-			utilisateur = utilisateursServices.modifierNom(utilisateur, nom);
-		}
-
-		if (prenom != null && !prenom.isEmpty()) {
-			utilisateur = utilisateursServices.modifierPrenom(utilisateur, prenom);
-		}
-
-		if (email != null && !email.isEmpty()) {
-			utilisateur = utilisateursServices.modifierEmail(utilisateur, email);
-		}
-
-		// Exemple test :
-		// http://localhost:8080/utilisateurs/123/?motDePasse=mdp1
-		if (motDePasse != null && !motDePasse.isEmpty()) {
-			utilisateur = utilisateursServices.modifierMDP(utilisateur, motDePasse);
-		}
-
-		// La date en string doit être écrite au format JJ/MM/YYYY
-		if (date != null) {
-			utilisateur = utilisateursServices.modifierDateNaissance(utilisateur, date);
-		}
-
-		if (adresse != null) {
-			utilisateur = utilisateursServices.modifierAdresse(utilisateur, adresse);
-		}
+		/** modification de l'utilisateur */
+		utilisateursServices.modifier(utilisateur, loginUtilisateur, nom, prenom, email, motDePasse, date, adresse,
+				profil);
 
 		traceService.creerTraceOK();
 
