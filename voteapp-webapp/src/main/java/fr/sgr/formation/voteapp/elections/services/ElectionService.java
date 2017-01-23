@@ -1,6 +1,7 @@
 package fr.sgr.formation.voteapp.elections.services;
 
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.sgr.formation.voteapp.elections.modele.Choix;
 import fr.sgr.formation.voteapp.elections.modele.Election;
 import fr.sgr.formation.voteapp.elections.modele.Vote;
 import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException.ErreurElection;
@@ -157,7 +159,7 @@ public class ElectionService {
 		if (election.getDateCloture() == null) {
 			throw new ElectionInvalideException(ErreurElection.ELECTION_NON_CLOTUREE);
 		}
-		List<Vote> votes = election.getVotes();
+		// TODO : récupérer les votes
 
 	}
 
@@ -180,19 +182,43 @@ public class ElectionService {
 	 * 
 	 * @param election
 	 * @param utilisateur
-	 * @param vote
+	 * @param choix
 	 * @throws ElectionInvalideException
 	 */
-	public void voter(Election election, Utilisateur utilisateur, Vote vote) throws ElectionInvalideException {
+	@Transactional(propagation = Propagation.REQUIRED)
+	public void voter(Election election, Utilisateur utilisateur, String choix) throws ElectionInvalideException {
 		log.info("=====> Vote de {} à {}.", utilisateur, election);
-		if (election.getListeVotants().contains(utilisateur)) {
+
+		Choix choixFinale;
+		if (choix.equals("oui")) {
+			choixFinale = Choix.OUI;
+		} else if (choix.equals("non")) {
+			choixFinale = Choix.NON;
+		} else if (choix.equals("blanc")) {
+			choixFinale = Choix.BLANC;
+		} else {
+			throw new ElectionInvalideException(ErreurElection.VOTE_NON_VALIDE);
+		}
+
+		Query requete = entityManager.createQuery(
+				"SELECT v FROM Vote v WHERE v.election.id=:id");
+		requete.setParameter("id", election.getId());
+		List<Vote> listeVote = requete.getResultList();
+		List<Utilisateur> listeVotant = new LinkedList<Utilisateur>();
+		for (Vote vote : listeVote) {
+			listeVotant.add(vote.getUtilisateur());
+			log.info("VOTE ", vote.toString());
+		}
+
+		if (listeVotant.contains(utilisateur)) {
 			throw new ElectionInvalideException(ErreurElection.DEJA_VOTE);
 		}
+
 		if (!(election.getDateCloture() == null)) {
 			throw new ElectionInvalideException(ErreurElection.ELECTION_CLOTUREE);
 		}
-		election.getVotes().add(vote);
-		election.getListeVotants().add(utilisateur);
+		Vote vote = new Vote("e" + election.getId() + "u" + utilisateur.getLogin(), utilisateur, election, choixFinale);
+		entityManager.persist(vote);
 	}
 
 }
