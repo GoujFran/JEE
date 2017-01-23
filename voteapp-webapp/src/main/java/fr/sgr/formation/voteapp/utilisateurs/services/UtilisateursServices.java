@@ -113,10 +113,11 @@ public class UtilisateursServices {
 		Utilisateur utilisateurModifie = utilisateur;
 		if (loginUtilisateur != null && !loginUtilisateur.isEmpty()) {
 			utilisateurModifie = rechercherParLogin(loginUtilisateur);
-			authentificationService.verificationAdministrateur(utilisateur.getLogin());
 		}
 
-		if (profil.length != 0 && profil != null) {
+		authentificationService.verificationExistence(utilisateurModifie);
+
+		if (profil != null && profil.length != 0) {
 			// il faut etre admin pour changer des profils
 			authentificationService.verificationAdministrateur(utilisateur.getLogin());
 			profilService.attribuerProfils(utilisateurModifie, profil);
