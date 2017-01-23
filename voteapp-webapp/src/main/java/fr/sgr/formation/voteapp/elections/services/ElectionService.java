@@ -1,6 +1,7 @@
 package fr.sgr.formation.voteapp.elections.services;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -154,13 +155,23 @@ public class ElectionService {
 		return list;
 	}
 
-	public void consulterRésultats(String id) throws ElectionInvalideException {
+	public HashMap<Choix, Integer> consulterRésultats(String id) throws ElectionInvalideException {
 		Election election = recupererElection(id);
 		if (election.getDateCloture() == null) {
 			throw new ElectionInvalideException(ErreurElection.ELECTION_NON_CLOTUREE);
 		}
-		// TODO : récupérer les votes
-
+		Query requete = entityManager.createQuery(
+				"SELECT v FROM Vote v WHERE v.election.id=:id");
+		requete.setParameter("id", election.getId());
+		List<Vote> listeVote = requete.getResultList();
+		HashMap<Choix, Integer> resultatVotes = new HashMap<Choix, Integer>();
+		resultatVotes.put(Choix.OUI, 0);
+		resultatVotes.put(Choix.NON, 0);
+		resultatVotes.put(Choix.BLANC, 0);
+		for (Vote vote : listeVote) {
+			resultatVotes.put(vote.getChoix(), resultatVotes.get(vote.getChoix()) + 1);
+		}
+		return resultatVotes;
 	}
 
 	/**
@@ -207,7 +218,6 @@ public class ElectionService {
 		List<Utilisateur> listeVotant = new LinkedList<Utilisateur>();
 		for (Vote vote : listeVote) {
 			listeVotant.add(vote.getUtilisateur());
-			log.info("VOTE ", vote.toString());
 		}
 
 		if (listeVotant.contains(utilisateur)) {

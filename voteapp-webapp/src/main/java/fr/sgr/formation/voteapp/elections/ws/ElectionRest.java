@@ -1,5 +1,6 @@
 package fr.sgr.formation.voteapp.elections.ws;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.sgr.formation.voteapp.elections.modele.Choix;
 import fr.sgr.formation.voteapp.elections.modele.Election;
 import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException;
 import fr.sgr.formation.voteapp.elections.services.ElectionService;
@@ -55,7 +57,7 @@ public class ElectionRest {
 	}
 
 	/**
-	 * méthode pour récupérer un utilisateur dans le systeme
+	 * méthode pour récupérer une élection dans le systeme
 	 * 
 	 * @param id
 	 */
@@ -64,6 +66,29 @@ public class ElectionRest {
 		log.info("=====> Récupération de l'élection {}.", id);
 		Election election = electionService.recupererElection(id);
 		return election;
+	}
+
+	/**
+	 * méthode pour rconsulter les résultats
+	 * 
+	 * @param id
+	 * @param login
+	 * @param motDePasse
+	 * @return
+	 * @throws ElectionInvalideException
+	 * @throws AuthentificationException
+	 */
+	@RequestMapping(method = RequestMethod.GET, path = "consulterResultat")
+	public HashMap<Choix, Integer> consulterResultats(@PathVariable String id, @RequestParam String login,
+			@RequestParam String motDePasse) throws ElectionInvalideException, AuthentificationException {
+		log.info("=====> Récupération de l'élection {}.", id);
+		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+		/** Validation de l'existence de l'utilisateur. */
+		authentificationService.verificationExistence(utilisateur);
+		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
+
+		HashMap<Choix, Integer> resultats = electionService.consulterRésultats(id);
+		return resultats;
 	}
 
 	/**
