@@ -29,7 +29,8 @@ public class ElectionInvalideException extends Exception {
 		DEJA_VOTE("Vous avez déjà voté à cette élection."),
 		ELECTION_CLOTUREE("Cette élection a été coturé, vous ne pouvez plus voter."),
 		ELECTION_NON_CLOTUREE("Cette élection n'est pas encore finie."),
-		VOTE_NON_VALIDE("Votre vote n'est pas valide.");
+		VOTE_NON_VALIDE("Votre vote n'est pas valide."),
+		ELECTION_INEXISTANTE("L'élection n'existe pas.");
 
 		@Getter
 		public String message;

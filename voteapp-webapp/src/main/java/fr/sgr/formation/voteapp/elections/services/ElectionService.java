@@ -19,6 +19,7 @@ import fr.sgr.formation.voteapp.elections.modele.Vote;
 import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException.ErreurElection;
 import fr.sgr.formation.voteapp.notifications.services.NotificationsServices;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
+import fr.sgr.formation.voteapp.utilisateurs.services.TraceService;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -36,28 +37,36 @@ public class ElectionService {
 
 	@Autowired
 	private EntityManager entityManager;
+	
+	@Autowired
+	private TraceService traceService;
 
 	@Transactional(propagation = Propagation.REQUIRED)
 	public Election creerElection(Election election) throws ElectionInvalideException {
 		log.info("=====> Création de l'élection : {}.", election);
 
 		if (election == null) {
+			traceService.creerTraceErreur("ELECTION_OBLIGATOIRE");
 			throw new ElectionInvalideException(ErreurElection.ELECTION_OBLIGATOIRE);
 		}
 
 		if (election.getId() == null || election.getId().equals("")) {
+			traceService.creerTraceErreur("ID_OBLIGATOIRE");
 			throw new ElectionInvalideException(ErreurElection.ID_OBLIGATOIRE);
 		}
 
 		if (election.getProprietaire() == null) {
+			traceService.creerTraceErreur("PROPRIETAIRE_OBLIGATOIRE");
 			throw new ElectionInvalideException(ErreurElection.PROPRIETAIRE_OBLIGATOIRE);
 		}
 
 		if (election.getTitre() == null || election.getTitre().equals("")) {
+			traceService.creerTraceErreur("TITRE_OBLIGATOIRE");
 			throw new ElectionInvalideException(ErreurElection.TITRE_OBLIGATOIRE);
 		}
 
 		if (election.getDescription() == null || election.getDescription().equals("")) {
+			traceService.creerTraceErreur("DESCRIPTION_OBLIGATOIRE");
 			throw new ElectionInvalideException(ErreurElection.DESCRIPTION_OBLIGATOIRE);
 		}
 
@@ -83,12 +92,17 @@ public class ElectionService {
 	 * @param id
 	 *            Login identifiant l'élection voulu
 	 * @return Retourne l'élection identifié par l'id
+	 * @throws ElectionInvalideException 
 	 */
-	public Election recupererElection(String id) {
+	public Election recupererElection(String id) throws ElectionInvalideException {
 		log.info("=====> Recherche de l'élection d'id {}.", id);
 		Election election = null;
 		if (!id.isEmpty()) {
 			election = entityManager.find(Election.class, id);
+		}
+		if (election == null) {
+			traceService.creerTraceErreur("ELECTION_INEXISTANTE");
+			throw new ElectionInvalideException(ErreurElection.ELECTION_INEXISTANTE);
 		}
 		return election;
 	}
@@ -158,6 +172,7 @@ public class ElectionService {
 	public HashMap<Choix, Integer> consulterRésultats(String id) throws ElectionInvalideException {
 		Election election = recupererElection(id);
 		if (election.getDateCloture() == null) {
+			traceService.creerTraceErreur("ELECTION_NON_CLOTUREE");
 			throw new ElectionInvalideException(ErreurElection.ELECTION_NON_CLOTUREE);
 		}
 		Query requete = entityManager.createQuery(
@@ -184,6 +199,7 @@ public class ElectionService {
 	public void verifierProprietaire(Election election, String login) throws ElectionInvalideException {
 		log.info("=====> Vérification si {} propriétaire de {}.", login, election);
 		if (!login.equals(election.getProprietaire().getLogin())) {
+			traceService.creerTraceErreur("NON_PROPRIETAIRE");
 			throw new ElectionInvalideException(ErreurElection.NON_PROPRIETAIRE);
 		}
 	}
@@ -208,6 +224,7 @@ public class ElectionService {
 		} else if (choix.equals("blanc")) {
 			choixFinale = Choix.BLANC;
 		} else {
+			traceService.creerTraceErreur("VOTE_NON_VALIDE");
 			throw new ElectionInvalideException(ErreurElection.VOTE_NON_VALIDE);
 		}
 
@@ -221,10 +238,12 @@ public class ElectionService {
 		}
 
 		if (listeVotant.contains(utilisateur)) {
+			traceService.creerTraceErreur("DEJA_VOTE");
 			throw new ElectionInvalideException(ErreurElection.DEJA_VOTE);
 		}
 
 		if (!(election.getDateCloture() == null)) {
+			traceService.creerTraceErreur("ELECTION_CLOTUREE");
 			throw new ElectionInvalideException(ErreurElection.ELECTION_CLOTUREE);
 		}
 		Vote vote = new Vote("e" + election.getId() + "u" + utilisateur.getLogin(), utilisateur, election, choixFinale);
