@@ -56,14 +56,14 @@ public class ElectionRest {
 	public void creer(@PathVariable String id, @RequestBody Election election)
 			throws AuthentificationException, ElectionInvalideException {
 		log.info("=====> Création de l'élection {}.", election);
-		
+
 		UtilisateursRest.traceStatic.setTypeAction("Création d'une élection");
 		UtilisateursRest.traceStatic.setDescription("Création");
 		UtilisateursRest.traceStatic.setUtilisateur(election.getProprietaire());
-		
+
 		authentificationService.verificationGerant(election.getProprietaire().getLogin());
 		electionService.creerElection(election);
-		
+
 		traceService.creerTraceOK();
 	}
 
@@ -72,14 +72,21 @@ public class ElectionRest {
 	 * 
 	 * @param id
 	 * @throws ElectionInvalideException 
+	 * @throws AuthentificationException 
 	 */
 	@RequestMapping(method = RequestMethod.GET)
-	public Election lire(@PathVariable String id) throws ElectionInvalideException {
+	public Election lire(@PathVariable String id, @RequestParam String login, @RequestParam String motDePasse) 
+			throws ElectionInvalideException, AuthentificationException {
 		log.info("=====> Récupération de l'élection {}.", id);
 		UtilisateursRest.traceStatic.setTypeAction("Récupération d'une élection");
 		UtilisateursRest.traceStatic.setDescription("Récupération");
+
+		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
+		authentificationService.verificationExistence(utilisateur);
+
 		Election election = electionService.recupererElection(id);
-		
+
 		traceService.creerTraceOK();
 		return election;
 	}
@@ -98,20 +105,20 @@ public class ElectionRest {
 	public HashMap<Choix, Integer> consulterResultats(@PathVariable String id, @RequestParam String login,
 			@RequestParam String motDePasse) throws ElectionInvalideException, AuthentificationException {
 		log.info("=====> Consulter les résultats de l'élection {}.", id);
-		
+
 		UtilisateursRest.traceStatic.setTypeAction("Consultation des résultats");
 		UtilisateursRest.traceStatic.setDescription("Consultation");
-		
+
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
-		
+
 		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
-		
+
 		/** Validation de l'existence de l'utilisateur. */
 		authentificationService.verificationExistence(utilisateur);
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
 		HashMap<Choix, Integer> resultats = electionService.consulterRésultats(id);
-		
+
 		traceService.creerTraceOK();
 		return resultats;
 	}
@@ -128,21 +135,21 @@ public class ElectionRest {
 	public void cloturer(@PathVariable String id, @RequestParam String login, @RequestParam String motDePasse)
 			throws AuthentificationException, ElectionInvalideException {
 		log.info("=====> Cloture de l'élection {} par {}.", id, login);
-		
+
 		UtilisateursRest.traceStatic.setTypeAction("Clôturer une élection");
 		UtilisateursRest.traceStatic.setDescription("Clôturer");
 
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
-		
+
 		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
-		
+
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
 		Election election = electionService.recupererElection(id);
 
 		electionService.verifierProprietaire(election, login);
 		electionService.fermerElection(election);
-		
+
 		traceService.creerTraceOK();
 	}
 
@@ -159,14 +166,14 @@ public class ElectionRest {
 			@RequestParam(required = false) String titre, @RequestParam(required = false) String description,
 			@RequestBody(required = false) List<String> images)
 					throws AuthentificationException, ElectionInvalideException {
-		log.info("=====> Cloture de l'élection {} par {}.", id, login);
+		log.info("=====> Modification de l'élection {} par {}.", id, login);
 
 		UtilisateursRest.traceStatic.setTypeAction("Modification d'une élection");
 		UtilisateursRest.traceStatic.setDescription("Modification");
-		
+
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
-		
+
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
 		Election election = electionService.recupererElection(id);
@@ -184,7 +191,7 @@ public class ElectionRest {
 		if (images != null && !images.isEmpty()) {
 			electionService.modifierImages(election, images);
 		}
-		
+
 		traceService.creerTraceOK();
 	}
 
@@ -195,16 +202,16 @@ public class ElectionRest {
 
 		UtilisateursRest.traceStatic.setTypeAction("Vote à une élection");
 		UtilisateursRest.traceStatic.setDescription("Vote");
-		
+
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
-		
+
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
 		Election election = electionService.recupererElection(id);
 
 		electionService.voter(election, utilisateur, choix);
-		
+
 		traceService.creerTraceOK();
 	}
 
