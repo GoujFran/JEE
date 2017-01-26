@@ -19,6 +19,7 @@ import fr.sgr.formation.voteapp.elections.modele.Choix;
 import fr.sgr.formation.voteapp.elections.modele.Election;
 import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException;
 import fr.sgr.formation.voteapp.elections.services.ElectionService;
+import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException.ErreurElection;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationException;
 import fr.sgr.formation.voteapp.utilisateurs.services.AuthentificationService;
@@ -58,6 +59,10 @@ public class ElectionRest {
 			throws AuthentificationException, ElectionInvalideException {
 		log.info("=====> Création de l'élection {}.", election);
 
+		if (id != election.getId()) {
+			traceService.creerTraceErreur("ID_NON_CORRESPONDANT");
+			throw new ElectionInvalideException(ErreurElection.ID_NON_CORRESPONDANT);
+		}
 		UtilisateursRest.traceStatic.setTypeAction("Création d'une élection");
 		UtilisateursRest.traceStatic.setDescription("Création");
 		UtilisateursRest.traceStatic.setUtilisateur(election.getProprietaire());

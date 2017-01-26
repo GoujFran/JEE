@@ -30,7 +30,8 @@ public class ElectionInvalideException extends Exception {
 		ELECTION_CLOTUREE("Cette élection a été coturé, vous ne pouvez plus voter."),
 		ELECTION_NON_CLOTUREE("Cette élection n'est pas encore finie."),
 		VOTE_NON_VALIDE("Votre vote n'est pas valide."),
-		ELECTION_INEXISTANTE("L'élection n'existe pas.");
+		ELECTION_INEXISTANTE("L'élection n'existe pas."),
+		ID_NON_CORRESPONDANT("Les id ne correspondent pas.");
 
 		@Getter
 		public String message;
