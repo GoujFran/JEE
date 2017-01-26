@@ -57,9 +57,9 @@ public class ElectionRest {
 	@RequestMapping(method = RequestMethod.POST)
 	public void creer(@PathVariable String id, @RequestBody Election election)
 			throws AuthentificationException, ElectionInvalideException {
-		log.info("=====> Création de l'élection {}.", election);
+		log.info("=====> Création de l'élection {} id {}.", election,id);
 
-		if (id != election.getId()) {
+		if (!id.equals(election.getId())) {
 			traceService.creerTraceErreur("ID_NON_CORRESPONDANT");
 			throw new ElectionInvalideException(ErreurElection.ID_NON_CORRESPONDANT);
 		}

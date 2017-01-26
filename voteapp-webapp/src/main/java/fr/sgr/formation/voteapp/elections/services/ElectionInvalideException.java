@@ -31,6 +31,7 @@ public class ElectionInvalideException extends Exception {
 		ELECTION_NON_CLOTUREE("Cette élection n'est pas encore finie."),
 		VOTE_NON_VALIDE("Votre vote n'est pas valide."),
 		ELECTION_INEXISTANTE("L'élection n'existe pas."),
+		ELECTION_EXISTANTE("L'élection existe déjà."),
 		ID_NON_CORRESPONDANT("Les id ne correspondent pas.");
 
 		@Getter

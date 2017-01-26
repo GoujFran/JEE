@@ -20,6 +20,8 @@ import fr.sgr.formation.voteapp.elections.services.ElectionInvalideException.Err
 import fr.sgr.formation.voteapp.notifications.services.NotificationsServices;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Utilisateur;
 import fr.sgr.formation.voteapp.utilisateurs.services.TraceService;
+import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateurInvalideException;
+import fr.sgr.formation.voteapp.utilisateurs.services.UtilisateurInvalideException.ErreurUtilisateur;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -68,6 +70,12 @@ public class ElectionService {
 		if (election.getDescription() == null || election.getDescription().equals("")) {
 			traceService.creerTraceErreur("DESCRIPTION_OBLIGATOIRE");
 			throw new ElectionInvalideException(ErreurElection.DESCRIPTION_OBLIGATOIRE);
+		}
+		
+		/** Validation de l'existance de l'utilisateur. */
+		if (entityManager.find(Election.class, election.getId()) != null) {
+			traceService.creerTraceErreur("ELECTION_EXISTANTE");
+			throw new ElectionInvalideException(ErreurElection.ELECTION_EXISTANTE);
 		}
 
 		/**
