@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import fr.sgr.formation.voteapp.elections.modele.Election;
 import fr.sgr.formation.voteapp.notifications.services.NotificationsServices;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Adresse;
 import fr.sgr.formation.voteapp.utilisateurs.modele.ProfilsUtilisateur;
@@ -359,6 +360,107 @@ public class UtilisateursServices {
 		String adresseMail = utilisateur.getEmail();
 		log.info("=====> Envoi du nouveau mot de passe {}, à l'adresse {}.", nouveauMDP, adresseMail);
 		return utilisateur;
+	}
+
+	/**
+	 * lister les élections
+	 * @param titre
+	 * @param clotures
+	 * @param utilisateur
+	 * @return
+	 */
+	public List<Election> listerElection(String titre, String clotures, Utilisateur utilisateur) {
+		boolean cloture = false;
+		if (clotures != null) {
+			if (clotures.equals("oui")) {
+				cloture = true;
+			} else if (!clotures.equals("non")) {
+				clotures = null;
+			}
+		}
+		log.info("=====> Recherche des élections correspondant aux critères");
+		Query requete = entityManager.createQuery(
+				"SELECT e FROM Election e");
+		if (titre != null) {
+			if (utilisateur != null){
+				if (clotures != null){
+					if(cloture){
+						requete = entityManager.createQuery(
+								"SELECT e FROM Election e INNER JOIN e.proprietaire p  WHERE not (((e.dateCloture) Is Null))"
+										+ "AND LOWER(e.titre) LIKE CONCAT('%', LOWER(:titre), '%') "
+										+ "AND LOWER(p)= LOWER(:utilisateur)");
+						requete.setParameter("titre", titre);
+						requete.setParameter("utilisateur",utilisateur);
+					} else {
+						requete = entityManager.createQuery(
+								"SELECT e FROM Election e INNER JOIN e.proprietaire p  WHERE (((e.dateCloture) Is Null))"
+										+ "AND LOWER(e.titre) LIKE CONCAT('%', LOWER(:titre), '%') "
+										+ "AND LOWER(p)= LOWER(:utilisateur)");
+						requete.setParameter("titre", titre);
+						requete.setParameter("utilisateur",utilisateur);
+					}
+				} else {
+					requete = entityManager.createQuery(
+							"SELECT e FROM Election e INNER JOIN e.proprietaire p "
+									+ "WHERE LOWER(e.titre) LIKE CONCAT('%', LOWER(:titre), '%') "
+									+ "AND LOWER(p)= LOWER(:utilisateur)");
+					requete.setParameter("titre", titre);
+					requete.setParameter("utilisateur",utilisateur);
+				}
+			} else {
+				if (clotures != null){
+					if(cloture){
+						requete = entityManager.createQuery(
+								"SELECT e FROM Election e  WHERE not (((e.dateCloture) Is Null))"
+										+ "AND LOWER(e.titre) LIKE CONCAT('%', LOWER(:titre), '%') ");
+						requete.setParameter("titre", titre);
+					} else {
+						requete = entityManager.createQuery(
+								"SELECT e FROM Election e WHERE (((e.dateCloture) Is Null))"
+										+ "AND LOWER(e.titre) LIKE CONCAT('%', LOWER(:titre), '%') ");
+						requete.setParameter("titre", titre);
+					}
+				} else {
+					requete = entityManager.createQuery(
+							"SELECT e FROM Election e "
+									+ "WHERE LOWER(e.titre) LIKE CONCAT('%', LOWER(:titre), '%') ");
+					requete.setParameter("titre", titre);
+				}
+			}
+		} else {
+			if (utilisateur != null){
+				if (clotures != null){
+					if(cloture){
+						requete = entityManager.createQuery(
+								"SELECT e FROM Election e INNER JOIN e.proprietaire p  WHERE not (((e.dateCloture) Is Null))"
+										+ "AND LOWER(p)= LOWER(:utilisateur)");
+						requete.setParameter("utilisateur",utilisateur);
+					} else {
+						requete = entityManager.createQuery(
+								"SELECT e FROM Election e INNER JOIN e.proprietaire p  WHERE (((e.dateCloture) Is Null))"
+										+ "AND LOWER(p)= LOWER(:utilisateur)");
+						requete.setParameter("utilisateur",utilisateur);
+					}
+				} else {
+					requete = entityManager.createQuery(
+							"SELECT e FROM Election e INNER JOIN e.proprietaire p "
+									+ "WHERE LOWER(p)= LOWER(:utilisateur)");
+					requete.setParameter("utilisateur",utilisateur);
+				}
+			} else {
+				if (clotures != null){
+					if(cloture){
+						requete = entityManager.createQuery(
+								"SELECT e FROM Election e  WHERE not (((e.dateCloture) Is Null))");
+					} else {
+						requete = entityManager.createQuery(
+								"SELECT e FROM Election e WHERE (((e.dateCloture) Is Null))");
+					}
+				}
+			}
+		}
+		List<Election> list = requete.getResultList();
+		return list;
 	}
 
 }

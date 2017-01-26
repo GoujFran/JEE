@@ -102,9 +102,13 @@ public class Initialisation {
 		}
 
 		Election election = new Election("01", francoise, "Election", "Une election se prépare");
+		Election election2 = new Election("02", francoise, "Election2", "Une election se prépare2");
+		Election election3 = new Election("03", francoise, "Election3", "Une election se prépare3");
 
 		try {
 			electionService.creerElection(election);
+			electionService.creerElection(election2);
+			electionService.creerElection(election3);
 			electionService.voter(election, laure, "oui");
 			electionService.voter(election, francoise, "non");
 		} catch (ElectionInvalideException e) {

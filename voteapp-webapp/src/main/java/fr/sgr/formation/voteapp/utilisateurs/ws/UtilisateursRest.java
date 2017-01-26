@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.sgr.formation.voteapp.elections.modele.Election;
 import fr.sgr.formation.voteapp.fonctionnementInterne.RetourPagine;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Adresse;
 import fr.sgr.formation.voteapp.utilisateurs.modele.Trace;
@@ -199,6 +200,41 @@ public class UtilisateursRest {
 
 	}
 
+	/**
+	 * Lister les élections
+	 * 
+	 * @param login
+	 * @param motDePasse
+	 * @param titre
+	 * @param cloture
+	 * @param createurLogin
+	 * @return
+	 * @throws AuthentificationException
+	 */
+	@RequestMapping(method = RequestMethod.GET, path = "listerElections")
+	public List<Election> listerElection(@PathVariable String login, @RequestParam String motDePasse,
+			@RequestParam(required = false) String titre, @RequestParam(required = false) String cloture,@RequestParam(required = false) String createurLogin)
+            throws AuthentificationException {
+        log.info("=====> Lister les élections par {}.", login);
+
+        Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+        
+        /** Validation de l'existence de l'utilisateur. */
+		authentificationService.verificationExistence(utilisateur);
+		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
+        
+		Utilisateur createur = null;
+		
+		if (createurLogin != null) {
+			createur = utilisateursServices.rechercherParLogin(createurLogin);
+        
+			authentificationService.verificationExistence(createur);
+		} 
+
+        List<Election> listeElection = utilisateursServices.listerElection(titre,cloture,createur);
+        return listeElection;
+    }
+	
 	@ExceptionHandler({ UtilisateurInvalideException.class })
 	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
 	public DescriptionErreur gestionErreur(UtilisateurInvalideException exception) {

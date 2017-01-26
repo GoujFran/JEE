@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -83,7 +84,10 @@ public class ElectionRest {
 
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
+		
+		/** Validation de l'existence de l'utilisateur. */
 		authentificationService.verificationExistence(utilisateur);
+		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
 		Election election = electionService.recupererElection(id);
 
@@ -143,6 +147,8 @@ public class ElectionRest {
 
 		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
 
+		/** Validation de l'existence de l'utilisateur. */
+		authentificationService.verificationExistence(utilisateur);
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
 		Election election = electionService.recupererElection(id);
@@ -174,6 +180,8 @@ public class ElectionRest {
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
 
+		/** Validation de l'existence de l'utilisateur. */
+		authentificationService.verificationExistence(utilisateur);
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
 		Election election = electionService.recupererElection(id);
@@ -206,6 +214,8 @@ public class ElectionRest {
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 		UtilisateursRest.traceStatic.setUtilisateur(utilisateur); 
 
+		/** Validation de l'existence de l'utilisateur. */
+		authentificationService.verificationExistence(utilisateur);
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
 		Election election = electionService.recupererElection(id);

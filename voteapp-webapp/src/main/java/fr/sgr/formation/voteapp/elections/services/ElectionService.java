@@ -155,20 +155,6 @@ public class ElectionService {
 		election.setImages(images);
 	}
 
-	public List<Election> listerElection(String profil) {
-		log.info("=====> Recherche des élections correspondant aux critères");
-		Query requete = entityManager.createQuery(
-				"SELECT e FROM Elections e");
-		if (!profil.isEmpty()) {
-			requete = entityManager.createQuery(
-					"SELECT e FROM Elections e INNER JOIN e.profils p "
-							+ "AND LOWER(p)=LOWER(:profil) ");
-			requete.setParameter("profil", profil);
-		}
-		List<Election> list = requete.getResultList();
-		return list;
-	}
-
 	public HashMap<Choix, Integer> consulterRésultats(String id) throws ElectionInvalideException {
 		Election election = recupererElection(id);
 		if (election.getDateCloture() == null) {
