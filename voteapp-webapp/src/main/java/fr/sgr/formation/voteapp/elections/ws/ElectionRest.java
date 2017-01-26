@@ -204,7 +204,7 @@ public class ElectionRest {
 		UtilisateursRest.traceStatic.setDescription("Vote");
 
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
-		UtilisateursRest.traceStatic.setUtilisateur(utilisateur);
+		UtilisateursRest.traceStatic.setUtilisateur(utilisateur); 
 
 		authentificationService.verificationMotdePasse(utilisateur, motDePasse);
 
