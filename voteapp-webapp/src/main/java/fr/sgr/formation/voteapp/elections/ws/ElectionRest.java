@@ -115,7 +115,7 @@ public class ElectionRest {
 			@RequestParam String motDePasse) throws ElectionInvalideException, AuthentificationException {
 		log.info("=====> Consulter les résultats de l'élection {}.", id);
 
-		UtilisateursRest.traceStatic.setTypeAction("Consultation des résultats");
+		UtilisateursRest.traceStatic.setTypeAction("Consultation des résultats d'une élection");
 		UtilisateursRest.traceStatic.setDescription("Consultation");
 
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
@@ -145,8 +145,8 @@ public class ElectionRest {
 			throws AuthentificationException, ElectionInvalideException {
 		log.info("=====> Cloture de l'élection {} par {}.", id, login);
 
-		UtilisateursRest.traceStatic.setTypeAction("Clôturer une élection");
-		UtilisateursRest.traceStatic.setDescription("Clôturer");
+		UtilisateursRest.traceStatic.setTypeAction("Clôture d'une élection");
+		UtilisateursRest.traceStatic.setDescription("Clôture");
 
 		Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
 
