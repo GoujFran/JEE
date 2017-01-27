@@ -217,7 +217,11 @@ public class UtilisateursRest {
             throws AuthentificationException {
         log.info("=====> Lister les élections par {}.", login);
 
+        traceStatic.setTypeAction("Recherche des élections");
+		traceStatic.setDescription("Recherche");
+		
         Utilisateur utilisateur = utilisateursServices.rechercherParLogin(login);
+        traceStatic.setUtilisateur(utilisateur);
         
         /** Validation de l'existence de l'utilisateur. */
 		authentificationService.verificationExistence(utilisateur);
@@ -232,6 +236,7 @@ public class UtilisateursRest {
 		} 
 
         List<Election> listeElection = utilisateursServices.listerElection(titre,cloture,createur);
+        traceService.creerTraceOK();
         return listeElection;
     }
 	
