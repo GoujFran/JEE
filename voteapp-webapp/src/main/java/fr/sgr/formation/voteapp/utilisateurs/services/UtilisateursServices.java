@@ -364,6 +364,7 @@ public class UtilisateursServices {
 
 	/**
 	 * lister les élections
+	 * 
 	 * @param titre
 	 * @param clotures
 	 * @param utilisateur

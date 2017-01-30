@@ -43,6 +43,13 @@ public class ElectionService {
 	@Autowired
 	private TraceService traceService;
 
+	/**
+	 * créer une élection
+	 * 
+	 * @param election
+	 * @return
+	 * @throws ElectionInvalideException
+	 */
 	@Transactional(propagation = Propagation.REQUIRED)
 	public Election creerElection(Election election) throws ElectionInvalideException {
 		log.info("=====> Création de l'élection : {}.", election);
@@ -163,6 +170,13 @@ public class ElectionService {
 		election.setImages(images);
 	}
 
+	/**
+	 * Consulter les résultats d'une élection
+	 * 
+	 * @param id
+	 * @return
+	 * @throws ElectionInvalideException
+	 */
 	public HashMap<Choix, Integer> consulterRésultats(String id) throws ElectionInvalideException {
 		Election election = recupererElection(id);
 		if (election.getDateCloture() == null) {

@@ -208,6 +208,16 @@ public class ElectionRest {
 		traceService.creerTraceOK();
 	}
 
+	/**
+	 * Voter à une élection
+	 * 
+	 * @param id
+	 * @param login
+	 * @param motDePasse
+	 * @param choix
+	 * @throws AuthentificationException
+	 * @throws ElectionInvalideException
+	 */
 	@RequestMapping(method = RequestMethod.PUT, path = "voter")
 	public void voter(@PathVariable String id, @RequestParam String login, @RequestParam String motDePasse,
 			@RequestParam String choix) throws AuthentificationException, ElectionInvalideException {
